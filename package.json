@@ -1,0 +1,29 @@
+{
+  "name": "teachguard-backend",
+  "version": "1.0.0",
+  "description": "TeachGuard AI Backend using Google Genkit",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "genkit:start": "genkit start -- ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.5",
+    "@genkit-ai/core": "^0.5.5",
+    "@genkit-ai/flow": "^0.5.5",
+    "@genkit-ai/googleai": "^0.5.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "pg": "^8.11.5"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.7",
+    "@types/pg": "^8.11.5",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.4.5"
+  }
+}
