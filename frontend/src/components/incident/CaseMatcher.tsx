@@ -36,7 +36,7 @@ export const CaseMatcher: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // 인증이 필요하다면 토큰 추가: 'Authorization': `Bearer ${token}`
+          'Authorization': 'Bearer TeachGuardSecureToken_KimTeacher2026'
         },
         body: JSON.stringify({ query: searchQuery, limit: 3 })
       });
@@ -122,7 +122,7 @@ export const CaseMatcher: React.FC = () => {
               </div>
             </div>
             <Typography variant="p" className="text-sm font-semibold text-brand-indigo animate-pulse mt-2">
-              Gemini AI가 유사한 판례와 처분 결과를 찾고 있습니다...
+              Gemini AI가 핵심 키워드를 추출하여 국가법령정보센터에서 실제 판례를 검색 중입니다...
             </Typography>
           </div>
         )}
@@ -168,7 +168,7 @@ export const CaseMatcher: React.FC = () => {
                         <div className="space-y-1.5 flex-1">
                           <div className="flex items-center gap-2">
                             <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider ${badgeColor}`}>
-                              유사도 {similarityPercent}%
+                              법제처 실제 판례 매칭
                             </span>
                             <span className="text-xs text-slate-400 font-mono">
                               ID: {result.id.length > 8 ? result.id.substring(0,8) : result.id}

@@ -8,6 +8,7 @@ import dotenv from 'dotenv';
 // genkit.config.ts의 설정을 먼저 로드합니다.
 import './genkit.config';
 import { generateTrendReportFlow } from './trendAnalysisApi';
+import { semanticSearchFlow } from './caseMatcher';
 
 dotenv.config();
 
@@ -448,6 +449,20 @@ app.post('/api/community/posts/:postId/comments', authenticateJWT as any, async 
     res.status(201).json({ ...newComment, original_user_id: undefined, author: '익명 교사', isMine: true });
   } catch (error: any) {
     res.status(500).json({ error: '댓글 작성 중 오류가 발생했습니다.' });
+  }
+});
+
+// 판례 매칭 API (법제처 연동)
+app.post('/api/cases/match', authenticateJWT as any, async (req: AuthenticatedRequest, res) => {
+  try {
+    const { query, limit } = req.body;
+    if (!query) return res.status(400).json({ error: '사건 내용을 입력해주세요.' });
+
+    const matchResult = await runFlow(semanticSearchFlow, { query, limit: limit || 3 });
+    return res.json(matchResult);
+  } catch (error) {
+    console.error('사건 매칭 에러:', error);
+    return res.status(500).json({ error: 'AI 매칭 서버 오류' });
   }
 });
 
