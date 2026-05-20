@@ -1,6 +1,6 @@
 import { defineFlow } from '@genkit-ai/flow';
-import { embed } from '@genkit-ai/ai';
-import { textEmbedding004 } from '@genkit-ai/googleai'; // Gemini Pro 호환 최신 임베딩 모델
+import { embed } from '@genkit-ai/ai/embedder';
+import { textEmbeddingGecko001 } from '@genkit-ai/googleai'; // Gemini Pro 호환 최신 임베딩 모델
 import * as z from 'zod';
 import { Pool } from 'pg';
 
@@ -42,7 +42,7 @@ export const embedAndStoreFlow = defineFlow(
     try {
       // 1. Gemini Text Embedding 모델을 사용하여 텍스트를 벡터로 변환
       const embeddingResult = await embed({
-        model: textEmbedding004,
+        embedder: textEmbeddingGecko001,
         content: input.content,
       });
 
@@ -93,7 +93,7 @@ export const semanticSearchFlow = defineFlow(
     try {
       // 1. 사용자 쿼리를 임베딩 벡터로 변환 (DB에 저장된 데이터와 동일한 모델 사용)
       const queryEmbedding = await embed({
-        model: textEmbedding004,
+        embedder: textEmbeddingGecko001,
         content: input.query,
       });
 

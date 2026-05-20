@@ -51,7 +51,7 @@ export const generateTrendReportFlow = defineFlow(
       const { rows: typeRows } = await pool.query(typeQuery);
 
       // 모의 데이터 (DB 데이터가 부족할 경우 UI 시각화를 위해 기본값 제공)
-      let chartData = typeRows.map(r => ({ type: r.type, count: parseInt(r.count) }));
+      let chartData = typeRows.map((r: any) => ({ type: r.type, count: parseInt(r.count) }));
       if (chartData.length === 0) {
         chartData = [
           { type: '폭언/모욕', count: 145 },

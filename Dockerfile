@@ -4,7 +4,7 @@ WORKDIR /app
 
 # 패키지 파일 복사 및 종속성 설치
 COPY package*.json ./
-RUN npm install --production
+RUN npm install
 
 # 타입스크립트 컴파일러 전역 설치 (빌드용)
 RUN npm install -g typescript

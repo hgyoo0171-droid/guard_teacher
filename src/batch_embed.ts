@@ -1,5 +1,5 @@
-import { embed } from '@genkit-ai/ai';
-import { textEmbedding004 } from '@genkit-ai/googleai';
+import { embed } from '@genkit-ai/ai/embedder';
+import { textEmbeddingGecko001 } from '@genkit-ai/googleai';
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
 // Genkit 설정을 불러옵니다 (API 키 등)
@@ -54,7 +54,7 @@ async function runBatchEmbedding() {
         
         // Gemini Text Embedding 호출
         const embeddingResult = await embed({
-          model: textEmbedding004,
+          embedder: textEmbeddingGecko001,
           content: row.content,
         });
 
