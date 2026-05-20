@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  PROJECT_ID: your-gcp-project-id
+  PROJECT_ID: studio-6453048279-17b21
   REGION: asia-northeast3
   REPO_NAME: teachguard-repo
 
