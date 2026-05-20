@@ -32,7 +32,7 @@ export const CaseMatcher: React.FC = () => {
     
     try {
       // 백엔드의 AI 시맨틱 검색 API 엔드포인트 호출
-      const response = await fetch('http://localhost:3000/api/cases/match', {
+      const response = await fetch('https://teachguard-backend-84878824642.asia-northeast3.run.app/api/cases/match', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

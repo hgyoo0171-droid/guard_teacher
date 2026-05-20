@@ -41,7 +41,7 @@ export function PostDetail({ post, onBack, onDelete }: PostDetailProps) {
   const fetchComments = async () => {
     try {
       // API call to fetch comments
-      const response = await fetch(`http://localhost:3000/api/community/posts/${post.id}/comments`, {
+      const response = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/community/posts/${post.id}/comments`, {
         headers: {
           'Authorization': 'Bearer TeachGuardSecureToken_KimTeacher2026'
         }
@@ -61,7 +61,7 @@ export function PostDetail({ post, onBack, onDelete }: PostDetailProps) {
     try {
       setIsSubmitting(true);
       setError(null);
-      const response = await fetch(`http://localhost:3000/api/community/posts/${post.id}/comments`, {
+      const response = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/community/posts/${post.id}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

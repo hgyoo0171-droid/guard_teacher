@@ -18,7 +18,7 @@ import {
 
 export const CaseProgressLogger: React.FC = () => {
   // 백엔드 API 주소 설정 (포트 3000 Express 서버 대응)
-  const API_BASE = 'http://localhost:3000';
+  const API_BASE = 'https://teachguard-backend-84878824642.asia-northeast3.run.app';
   
   // 모의 사용자 보안 토큰 (NEIS 인증 연계 가정)
   const [secureToken, setSecureToken] = useState('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.TeachGuardSecureToken_KimTeacher2026');

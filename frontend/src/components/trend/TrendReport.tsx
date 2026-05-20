@@ -35,7 +35,7 @@ export function TrendReport() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`http://localhost:3000/api/trend-report?period=${encodeURIComponent(period)}`, {
+      const response = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/trend-report?period=${encodeURIComponent(period)}`, {
         headers: {
           'Authorization': 'Bearer TeachGuardSecureToken_KimTeacher2026'
         }

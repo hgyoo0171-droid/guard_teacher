@@ -33,7 +33,7 @@ export type UpdateProgressLogInput = Partial<CreateProgressLogInput>;
 // ──────────────────────────────────────────────────
 // API 클라이언트 설정
 // ──────────────────────────────────────────────────
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://teachguard-backend-84878824642.asia-northeast3.run.app';
 
 /**
  * 인증 토큰을 포함한 공통 fetch 헬퍼

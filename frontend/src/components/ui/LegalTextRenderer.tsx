@@ -36,7 +36,7 @@ export const LegalTextRenderer: React.FC<LegalTextRendererProps> = ({ content })
     try {
       // 실제 구현 시 백엔드 API (예: GET /api/law/:article) 호출
       // 테스트를 위해 모의 응답 딜레이 추가
-      const response = await fetch(`http://localhost:3000/api/law/${articleNum}`);
+      const response = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/law/${articleNum}`);
       if (response.ok) {
         const data = await response.json();
         setSelectedLaw(data);

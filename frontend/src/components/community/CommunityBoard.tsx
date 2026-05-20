@@ -27,7 +27,7 @@ export function CommunityBoard() {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/community/posts', {
+      const response = await fetch('https://teachguard-backend-84878824642.asia-northeast3.run.app/api/community/posts', {
         headers: {
           'Authorization': 'Bearer TeachGuardSecureToken_KimTeacher2026'
         }
@@ -44,7 +44,7 @@ export function CommunityBoard() {
   };
 
   const handleCreatePost = async (title: string, content: string) => {
-    const response = await fetch('http://localhost:3000/api/community/posts', {
+    const response = await fetch('https://teachguard-backend-84878824642.asia-northeast3.run.app/api/community/posts', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ export function CommunityBoard() {
     if (!confirm('정말 삭제하시겠습니까?')) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/api/community/posts/${id}`, {
+      const response = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/community/posts/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': 'Bearer TeachGuardSecureToken_KimTeacher2026'
