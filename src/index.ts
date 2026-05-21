@@ -9,6 +9,7 @@ import dotenv from 'dotenv';
 import './genkit.config';
 import { generateTrendReportFlow } from './trendAnalysisApi';
 import { semanticSearchFlow } from './caseMatcher';
+import { searchSchoolInfoFlow } from './neisApi';
 
 dotenv.config();
 
@@ -475,6 +476,21 @@ app.get('/api/trend-report', authenticateJWT as any, async (req: AuthenticatedRe
   } catch (error: any) {
     console.error('Error in trend report:', error);
     res.status(500).json({ error: '트렌드 리포트 생성 중 오류가 발생했습니다.' });
+  }
+});
+
+// 공공데이터 - 나이스 학교 정보 검색 API
+app.get('/api/school-info', authenticateJWT as any, async (req: AuthenticatedRequest, res) => {
+  try {
+    const schoolName = req.query.schoolName as string;
+    if (!schoolName) {
+      return res.status(400).json({ error: '검색할 학교명(schoolName)을 입력해주세요.' });
+    }
+    const result = await runFlow(searchSchoolInfoFlow, { schoolName });
+    res.json(result);
+  } catch (error: any) {
+    console.error('Error fetching school info:', error);
+    res.status(500).json({ error: '학교 정보를 검색하는 중 오류가 발생했습니다.' });
   }
 });
 
