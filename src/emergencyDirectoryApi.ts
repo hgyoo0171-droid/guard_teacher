@@ -44,7 +44,7 @@ export const getEmergencyContactsFlow = defineFlow(
   async (input) => {
     try {
       // 환경 변수에서 API 키 로드
-      const apiKey = process.env.DATA_GO_KR_API_KEY || 'a0fa1ac436567af0d0c013fda34629dba7096151df8327d3f2ad3ae45d744b3b';
+      const apiKey = process.env.DATA_GO_KR_API_KEY;
       if (!apiKey) {
         console.warn('DATA_GO_KR_API_KEY가 설정되지 않아 폴백 데이터를 반환합니다.');
         return FALLBACK_CENTERS;

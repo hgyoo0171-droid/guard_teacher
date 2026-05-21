@@ -30,7 +30,7 @@ export const semanticSearchFlow = defineFlow(
   },
   async (input) => {
     try {
-      const apiKey = process.env.LAW_API_KEY || 'teachguard8132325';
+      const apiKey = process.env.LAW_API_KEY;
       if (!apiKey) {
         throw new Error('법제처 API 키(LAW_API_KEY)가 설정되지 않았습니다.');
       }
