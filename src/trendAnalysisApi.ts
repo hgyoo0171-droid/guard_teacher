@@ -72,31 +72,47 @@ export const generateTrendReportFlow = defineFlow(
         { month: '6월', count: 65 },
       ];
 
-      // 2. AI(Gemini Pro) 분석 요약 요청
-      // 집계된 로우 데이터(JSON)를 프롬프트에 제공하여 맥락을 파악하게 함
+      // 2. AI(Gemini 1.5 Flash) 분석 요약 요청 (REST API 직접 호출)
       const statsJson = JSON.stringify(chartData, null, 2);
-      
-      const aiResult = await generate({
-        model: geminiPro,
-        prompt: `당신은 교육청 교권보호 위원회의 최고 데이터 분석가입니다.
+      const promptText = `당신은 교육청 교권보호 위원회의 최고 데이터 분석가입니다.
 아래는 ${input.period} 동안 집계된 교권 침해 유형별 발생 건수 통계 데이터입니다.
 
 [집계 데이터]
 ${statsJson}
-월별 추이: 학기 초(3월)부터 꾸준히 증가하여 5~6월에 최고조에 달하는 양상을 보임.
+월별 추이: 학기 초(3월)부터 꾸준히 증가하여 5~6월에 최고조에 달하는 양상을 보임. (현재 월별 추이는 데모용 샘플 데이터입니다.)
 
 [지시 사항]
 위 통계를 바탕으로 다음 세 가지 항목을 포함하는 '예방 및 트렌드 분석 리포트'를 마크다운 형식으로 작성해 주세요.
 1. 핵심 트렌드 분석: 데이터에서 가장 두드러지는 특징 2가지를 요약하세요. (예: 어떤 침해가 가장 많은지, 시기적 특성은 무엇인지)
 2. 주요 원인 추론: 이러한 통계적 패턴이 발생하는 원인을 교육 현장의 관점에서 합리적으로 추론하세요.
-3. 선제적 예방 대책 가이드: 교장 및 교사들이 5~6월 같은 취약 시기에 취할 수 있는 실무적인 예방 대책을 3가지 제안하세요.
-- 응답은 정중하고 통찰력 있는 보고서 어조를 유지하세요.`,
+3. 선제적 예방 대책 가이드: 교장 및 교사들이 취할 수 있는 실무적인 예방 대책을 3가지 제안하세요.
+- 응답은 정중하고 통찰력 있는 보고서 어조를 유지하세요.`;
+
+      const geminiApiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY;
+      
+      // 동적으로 모델 조회
+      const modelsRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${geminiApiKey}`);
+      const modelsData: any = await modelsRes.json();
+      const availableModel = modelsData?.models?.find((m: any) => 
+        m.name.includes('gemini') && m.supportedGenerationMethods?.includes('generateContent')
+      );
+      
+      const targetModel = availableModel ? availableModel.name : 'models/gemini-1.5-flash';
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/${targetModel}:generateContent?key=${geminiApiKey}`;
+      
+      const geminiRes = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
       });
+      
+      const geminiData: any = await geminiRes.json();
+      const aiSummaryText = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text || 'AI 분석 결과를 불러오지 못했습니다.';
 
       return {
         chartData,
         monthlyData,
-        aiSummary: aiResult.text(),
+        aiSummary: aiSummaryText,
       };
     } catch (error: any) {
       console.error('Trend Report Generation Error:', error);

@@ -71,9 +71,12 @@ export function TrendReport() {
     <div className="mx-auto max-w-5xl space-y-8 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">예방 및 트렌드 분석 리포트</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            예방 및 트렌드 분석 리포트
+            <span className="px-2 py-1 text-xs font-semibold bg-orange-100 text-orange-600 rounded-md">샘플 데이터 연동 중</span>
+          </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
-            익명화된 교권침해 데이터를 분석하여 최신 동향과 예방 가이드를 제공합니다.
+            현재 표시되는 데이터는 시스템 데모를 위한 <b>[모의 샘플 데이터]</b>입니다. 정식 출시 후 실제 데이터로 대체됩니다.
           </p>
         </div>
         <select 
