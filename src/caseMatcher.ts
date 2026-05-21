@@ -1,6 +1,6 @@
 import { defineFlow } from '@genkit-ai/flow';
 import { generate } from '@genkit-ai/ai';
-import { gemini15Flash } from '@genkit-ai/googleai';
+import { geminiPro } from '@genkit-ai/googleai';
 import * as z from 'zod';
 
 /**
@@ -37,7 +37,7 @@ export const semanticSearchFlow = defineFlow(
 
       // 1. Gemini를 이용하여 구어체 문장에서 핵심 법률 검색어(키워드) 추출
       const keywordResponse = await generate({
-        model: gemini15Flash,
+        model: geminiPro,
         prompt: `다음은 교권 침해를 당한 교사가 자신의 상황을 설명한 글입니다. 이 상황을 바탕으로 대한민국의 법제처 판례 검색 엔진에서 검색할 가장 핵심적인 '법률 키워드' 딱 1개 또는 2개를 추출해주세요.
 (예: 모욕, 폭행, 명예훼손, 업무방해, 아동학대 등)
 반드시 키워드 단어만 띄어쓰기로 구분해서 답변하고 다른 말은 절대 하지 마세요.
