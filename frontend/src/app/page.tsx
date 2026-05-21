@@ -5,7 +5,8 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { IncidentForm, IncidentFormValues } from '@/components/incident/IncidentForm';
 import { CaseProgressLogger } from '@/components/incident/CaseProgressLogger';
 import { CaseMatcher } from '@/components/incident/CaseMatcher';
-import { EmergencyDirectory } from '@/components/incident/EmergencyDirectory';
+import { EmergencyContacts } from '@/components/incident/EmergencyContacts';
+import { SchoolIntegration } from '@/components/incident/SchoolIntegration';
 import { TrendAnalysisReport } from '@/components/incident/TrendAnalysisReport';
 import { Typography } from '../components/ui/Typography';
 import { Button } from '../components/ui/Button';
@@ -452,28 +453,9 @@ export default function Home() {
             <Input label="이메일" defaultValue="teacher@school.go.kr" readOnly />
           </div>
           
-          <div className="space-y-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-            <div className="flex items-end gap-2">
-              <div className="flex-1">
-                <Input 
-                  label="나이스 학교 검색 (공공데이터)" 
-                  placeholder="예: 서울초등학교" 
-                  value={schoolSearchInput}
-                  onChange={(e) => setSchoolSearchInput(e.target.value)}
-                />
-              </div>
-              <Button variant="primary" onClick={handleSchoolSearch} disabled={searchingSchool}>
-                {searchingSchool ? '검색중...' : '검색'}
-              </Button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <Input label="소속 교육청 (자동입력)" value={schoolInfo.office} readOnly className="bg-white" />
-              <Input label="학교명 (자동입력)" value={schoolInfo.name} readOnly className="bg-white" />
-            </div>
-            <Typography variant="p" className="text-xs text-brand-indigo mt-1">
-              * 검색된 교육청 정보에 기반하여 '긴급 지원 네트워크'의 교원치유센터 지역 필터가 자동 설정됩니다.
-            </Typography>
-          </div>
+          
+          <SchoolIntegration />
+
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input label="담당 직급" defaultValue="5학년 2반 담임" />
@@ -500,7 +482,7 @@ export default function Home() {
       case 'case-matcher':
         return <CaseMatcher />;
       case 'emergency-directory':
-        return <EmergencyDirectory initialRegion={userRegion} />;
+        return <EmergencyContacts />;
       case 'trend-report':
         return <TrendAnalysisReport />;
       case 'ai-consultation':
