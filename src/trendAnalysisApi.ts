@@ -1,6 +1,6 @@
 import { defineFlow } from '@genkit-ai/flow';
 import { generate } from '@genkit-ai/ai';
-import { gemini15Pro } from '@genkit-ai/googleai';
+import { geminiPro } from '@genkit-ai/googleai';
 import * as z from 'zod';
 import { Pool } from 'pg';
 
@@ -77,7 +77,7 @@ export const generateTrendReportFlow = defineFlow(
       const statsJson = JSON.stringify(chartData, null, 2);
       
       const aiResult = await generate({
-        model: gemini15Pro,
+        model: geminiPro,
         prompt: `당신은 교육청 교권보호 위원회의 최고 데이터 분석가입니다.
 아래는 ${input.period} 동안 집계된 교권 침해 유형별 발생 건수 통계 데이터입니다.
 
