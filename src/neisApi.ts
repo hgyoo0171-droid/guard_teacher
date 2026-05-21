@@ -25,7 +25,8 @@ export const searchSchoolInfoFlow = defineFlow(
   },
   async (input) => {
     try {
-      const apiKey = process.env.NEIS_API_KEY;
+      // 환경 변수에서 API 키 로드
+      const apiKey = process.env.NEIS_API_KEY || 'c5d68d19fa7a45249181ff6dfa0f43b3';
       if (!apiKey) {
         throw new Error('NEIS_API_KEY가 설정되지 않았습니다.');
       }
