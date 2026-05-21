@@ -462,9 +462,9 @@ app.post('/api/cases/match', authenticateJWT as any, async (req: AuthenticatedRe
 
     const matchResult = await runFlow(semanticSearchFlow, { query, limit: limit || 3 });
     return res.json(matchResult);
-  } catch (error) {
+  } catch (error: any) {
     console.error('사건 매칭 에러:', error);
-    return res.status(500).json({ error: 'AI 매칭 서버 오류' });
+    return res.status(500).json({ error: 'AI 매칭 서버 오류', details: error.toString(), stack: error.stack });
   }
 });
 
