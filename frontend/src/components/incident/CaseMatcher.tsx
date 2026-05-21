@@ -167,8 +167,8 @@ export const CaseMatcher: React.FC = () => {
                       >
                         <div className="space-y-1.5 flex-1">
                           <div className="flex items-center gap-2">
-                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider ${badgeColor}`}>
-                              법제처 실제 판례 매칭
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider ${result.id.startsWith('mock') ? 'bg-orange-100 text-orange-600' : badgeColor}`}>
+                              {result.id.startsWith('mock') ? '임시 테스트 판례' : '법제처 실제 판례 매칭'}
                             </span>
                             <span className="text-xs text-slate-400 font-mono">
                               ID: {result.id.length > 8 ? result.id.substring(0,8) : result.id}
