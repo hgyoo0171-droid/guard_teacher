@@ -35,16 +35,28 @@ export const semanticSearchFlow = defineFlow(
         throw new Error('법제처 API 키(LAW_API_KEY)가 설정되지 않았습니다.');
       }
 
-      // 1. Gemini를 이용하여 구어체 문장에서 핵심 법률 검색어(키워드) 추출
-      const keywordResponse = await generate({
-        model: geminiPro,
-        prompt: `다음은 교권 침해를 당한 교사가 자신의 상황을 설명한 글입니다. 이 상황을 바탕으로 대한민국의 법제처 판례 검색 엔진에서 검색할 가장 핵심적인 '법률 키워드' 딱 1개 또는 2개를 추출해주세요.
+      const promptText = `다음은 교권 침해를 당한 교사가 자신의 상황을 설명한 글입니다. 이 상황을 바탕으로 대한민국의 법제처 판례 검색 엔진에서 검색할 가장 핵심적인 '법률 키워드' 딱 1개 또는 2개를 추출해주세요.
 (예: 모욕, 폭행, 명예훼손, 업무방해, 아동학대 등)
 반드시 키워드 단어만 띄어쓰기로 구분해서 답변하고 다른 말은 절대 하지 마세요.
-상황: "${input.query}"`,
-      });
+상황: "${input.query}"`;
 
-      const extractedKeyword = keywordResponse.text().trim().split(' ')[0] || '교권침해';
+      const geminiApiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY;
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
+      const geminiRes = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: promptText }] }]
+        })
+      });
+      
+      const geminiData: any = await geminiRes.json();
+      if (geminiData.error) {
+        throw new Error(`Gemini API 오류: ${geminiData.error.message}`);
+      }
+      
+      const extractedText = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text || '교권침해';
+      const extractedKeyword = extractedText.trim().split(' ')[0] || '교권침해';
       console.log(`[CaseMatcher] 추출된 법률 키워드: ${extractedKeyword}`);
 
       // 2. 법제처 판례 목록 API 호출
