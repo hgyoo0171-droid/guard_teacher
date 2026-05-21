@@ -93,36 +93,69 @@ export const semanticSearchFlow = defineFlow(
       precList = precList.slice(0, input.limit);
 
       // 3. 각 판례별 상세 본문(판결요지) API 호출하여 데이터 조립
-      const results = await Promise.all(precList.map(async (prec: any, index: number) => {
-        let contentText = `[사건정보] ${prec.법원명} ${prec.사건종류명} (${prec.선고일자} 선고 ${prec.사건번호})\n`;
-        
+      const rawResults = await Promise.all(precList.map(async (prec: any, index: number) => {
+        let summary = '';
         try {
-          // 본문 상세 조회 API 호출 (판결 요지 추출용)
           const detailUrl = `https://www.law.go.kr/DRF/lawService.do?OC=${apiKey}&target=prec&type=JSON&ID=${prec.판례일련번호}`;
           const detailRes = await fetch(detailUrl);
           const detailData: any = await detailRes.json();
-          
           if (detailData?.PrecService?.판결요지) {
-             // 판결 요지에 들어있는 HTML 태그 제거
-             let summary = detailData.PrecService.판결요지.replace(/<[^>]*>?/gm, '');
-             // 너무 길 경우 자르기
-             if (summary.length > 300) summary = summary.substring(0, 300) + '... (상략)';
-             contentText += `\n[판결요지]\n${summary}`;
-          } else {
-             contentText += `\n[상세 내용]\n이 사건은 ${extractedKeyword}와(과) 관련된 판례입니다. 상세한 판결 요지는 국가법령정보센터에서 사건번호로 조회하실 수 있습니다.`;
+             summary = detailData.PrecService.판결요지.replace(/<[^>]*>?/gm, '');
+             if (summary.length > 500) summary = summary.substring(0, 500) + '...';
           }
-        } catch (err) {
-          contentText += `\n[상세 내용]\n이 사건은 ${extractedKeyword} 관련 판례입니다.`;
-        }
-
+        } catch (err) {}
+        
         return {
           id: prec.판례일련번호 || `prec-${Date.now()}-${index}`,
           title: prec.사건명 || '관련 사건 판례',
-          content: contentText,
-          // API에 유사도 개념이 없으므로, 검색어 연관성에 따라 가상의 높은 점수 부여 ( UI 표시용 )
-          similarity: 0.99 - (index * 0.03) 
+          summary: summary,
+          info: `[${prec.법원명} ${prec.사건종류명} ${prec.선고일자} ${prec.사건번호}]`
         };
       }));
+
+      // 4. 검색된 판례가 선생님의 상황에 어떻게 적용되는지 Gemini에게 해석 요청
+      const interpretPrompt = `
+선생님의 교권 침해 상황: "${input.query}"
+검색된 법률 키워드: ${extractedKeyword}
+
+아래는 국가법령정보센터에서 검색된 실제 판례들입니다. 표면적으로는 학교와 무관해 보일 수 있으나 법리적으로는 동일한 죄목(${extractedKeyword})입니다.
+각 판례의 법리적 기준이 선생님의 상황에 어떻게 적용될 수 있는지(예: 성립 요건, 처벌 가능성 등)를 선생님이 이해하기 쉽게 3~4문장으로 해석해주세요.
+
+판례 데이터:
+${JSON.stringify(rawResults)}
+
+반드시 아래와 같은 JSON 배열 형식으로만 응답하세요. (마크다운 백틱 없이 순수 JSON만 반환)
+[
+  { "id": "판례일련번호", "interpretation": "AI의 친절한 법률 해석..." }
+]
+`;
+
+      let interpretations: any = [];
+      try {
+        const interpretRes = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: interpretPrompt }] }] })
+        });
+        const interpretData: any = await interpretRes.json();
+        const rawJsonText = interpretData?.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
+        const cleanJsonText = rawJsonText.replace(/```json/g, '').replace(/```/g, '').trim();
+        interpretations = JSON.parse(cleanJsonText);
+      } catch (e) {
+        console.error('Gemini 해석 오류', e);
+      }
+
+      const results = rawResults.map((raw, index) => {
+        const interpretation = interpretations.find((i: any) => i.id === raw.id)?.interpretation || 
+          `${extractedKeyword} 관련 판례입니다. 위 사례의 법리적 기준이 선생님의 상황에도 유사하게 적용될 수 있습니다.`;
+          
+        return {
+          id: raw.id,
+          title: raw.title,
+          content: `${raw.info}\n\n[💡 AI 맞춤형 법률 해석]\n${interpretation}\n\n[실제 판결 요지]\n${raw.summary || '판결 요지가 제공되지 않는 사건입니다.'}`,
+          similarity: 0.99 - (index * 0.03) 
+        };
+      });
 
       // 검색 결과가 아예 없을 경우의 폴백 처리
       if (results.length === 0) {
