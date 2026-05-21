@@ -110,7 +110,16 @@ export const semanticSearchFlow = defineFlow(
       return { results };
     } catch (error: any) {
       console.error('Law API 연동 검색 실패:', error);
-      throw new Error('법제처 API 통신 중 오류가 발생했습니다.');
+      return {
+        results: [
+          {
+            id: 'error-debug',
+            title: `[서버 에러 디버깅]`,
+            content: `에러 원인을 찾고 있습니다.\n메시지: ${error.message}\n상세: ${error.toString()}`,
+            similarity: 1
+          }
+        ]
+      };
     }
   }
 );
