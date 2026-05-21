@@ -196,7 +196,7 @@ export const CaseMatcher: React.FC = () => {
                       </div>
 
                       {/* 바디 (상세내용 펼침부) */}
-                      <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+                      <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'}`}>
                         <div className="p-5 pt-0 bg-slate-50/50 border-t border-slate-100/60">
                           <div className="mt-4 p-4 rounded-xl bg-white border border-slate-100 shadow-inner">
                             <Typography variant="p" className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap font-medium">
