@@ -33,6 +33,41 @@ export default function Home() {
     { role: 'ai', text: '안녕하세요! 선생님의 권리와 마음을 치유하는 TeachGuard AI입니다. 현재 처하신 곤란한 교권 침해 상황에 대해 편하게 말씀해 주시면, 행동 지침과 법적 조력을 안내해 드립니다.' }
   ]);
 
+  // 4. 학교 검색 및 사용자 지역 상태 (공공데이터 연동)
+  const [userRegion, setUserRegion] = useState('전체');
+  const [schoolSearchInput, setSchoolSearchInput] = useState('');
+  const [searchingSchool, setSearchingSchool] = useState(false);
+  const [schoolInfo, setSchoolInfo] = useState({ office: '서울특별시 교육청', name: '서울한국초등학교' });
+
+  const handleSchoolSearch = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!schoolSearchInput) return;
+    setSearchingSchool(true);
+    try {
+      const response = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/school-info?schoolName=${encodeURIComponent(schoolSearchInput)}`, {
+        headers: { 'Authorization': 'Bearer TeachGuardSecureToken_KimTeacher2026' }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.length > 0) {
+          const firstHit = data[0];
+          setSchoolInfo({ office: firstHit.officeOfEducation, name: firstHit.schoolName });
+          // 시도 이름 추출 (예: '서울특별시교육청' -> '서울')
+          const regionPrefix = firstHit.officeOfEducation.substring(0, 2);
+          setUserRegion(regionPrefix);
+          alert(`${firstHit.schoolName} 정보를 나이스(NEIS)에서 성공적으로 가져왔습니다!`);
+        } else {
+          alert('나이스(NEIS) 서버에서 일치하는 학교를 찾을 수 없습니다.');
+        }
+      }
+    } catch (error) {
+      console.error('School search error', error);
+      alert('학교 검색 중 오류가 발생했습니다.');
+    } finally {
+      setSearchingSchool(false);
+    }
+  };
+
   // 기록 제출 성공 핸들러
   const handleFormSuccess = (data: IncidentFormValues) => {
     setSubmittedData(data);
@@ -417,9 +452,27 @@ export default function Home() {
             <Input label="이메일" defaultValue="teacher@school.go.kr" readOnly />
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="소속 교육청" defaultValue="서울특별시 교육청" />
-            <Input label="학교명" defaultValue="서울한국초등학교" />
+          <div className="space-y-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
+            <div className="flex items-end gap-2">
+              <div className="flex-1">
+                <Input 
+                  label="나이스 학교 검색 (공공데이터)" 
+                  placeholder="예: 서울초등학교" 
+                  value={schoolSearchInput}
+                  onChange={(e) => setSchoolSearchInput(e.target.value)}
+                />
+              </div>
+              <Button variant="primary" onClick={handleSchoolSearch} disabled={searchingSchool}>
+                {searchingSchool ? '검색중...' : '검색'}
+              </Button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <Input label="소속 교육청 (자동입력)" value={schoolInfo.office} readOnly className="bg-white" />
+              <Input label="학교명 (자동입력)" value={schoolInfo.name} readOnly className="bg-white" />
+            </div>
+            <Typography variant="p" className="text-xs text-brand-indigo mt-1">
+              * 검색된 교육청 정보에 기반하여 '긴급 지원 네트워크'의 교원치유센터 지역 필터가 자동 설정됩니다.
+            </Typography>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -447,7 +500,7 @@ export default function Home() {
       case 'case-matcher':
         return <CaseMatcher />;
       case 'emergency-directory':
-        return <EmergencyDirectory />;
+        return <EmergencyDirectory initialRegion={userRegion} />;
       case 'trend-report':
         return <TrendAnalysisReport />;
       case 'ai-consultation':

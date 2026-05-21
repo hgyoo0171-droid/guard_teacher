@@ -17,11 +17,11 @@ interface EmergencyContact {
 const REGIONS = ['전체', '서울', '경기', '인천', '부산', '대구', '대전', '광주', '전국'];
 const CATEGORIES = ['전체', '교원치유센터', '교육청', '심리상담소', '법률지원', '기타'];
 
-export const EmergencyDirectory: React.FC = () => {
+export const EmergencyDirectory: React.FC<{ initialRegion?: string }> = ({ initialRegion = '전체' }) => {
   const [contacts, setContacts] = useState<EmergencyContact[]>([]);
   const [loading, setLoading] = useState(true);
   
-  const [activeRegion, setActiveRegion] = useState('전체');
+  const [activeRegion, setActiveRegion] = useState(initialRegion);
   const [activeCategory, setActiveCategory] = useState('전체');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -32,20 +32,21 @@ export const EmergencyDirectory: React.FC = () => {
   const fetchContacts = async () => {
     setLoading(true);
     try {
-      // 실제 연동 시 백엔드 API (예: GET /api/emergency-contacts) 호출
-      // 테스트를 위해 setTimeout으로 모의 딜레이 적용 후 목업 데이터 로드
-      setTimeout(() => {
-        setContacts([
-          { id: '1', region: '서울', category: '교원치유센터', name: '서울특별시교육청 교원치유지원센터', phone: '02-399-9096', description: '심리상담 및 법률 자문 핫라인' },
-          { id: '2', region: '서울', category: '법률지원', name: '서울지방변호사회 교권보호지원단', phone: '02-3476-8080', description: '교권침해 관련 무료 초기 법률상담' },
-          { id: '3', region: '경기', category: '에듀힐링센터', name: '경기도교육청 교권보호지원센터', phone: '031-249-0585', description: '긴급 위기 개입 및 학부모 갈등 중재' },
-          { id: '4', region: '전국', category: '법률지원', name: '한국교직원공제회 무료법률상담', phone: '1577-3400', description: '회원 대상 형사/민사 소송 지원 및 상담' },
-          { id: '5', region: '대전', category: '에듀힐링센터', name: '대전광역시교육청 에듀힐링센터', phone: '042-616-8000', description: '교직원 심리치유 및 에듀-코칭' },
-        ]);
-        setLoading(false);
-      }, 600);
+      // 공공데이터포털 연동 백엔드 API 호출
+      const response = await fetch('https://teachguard-backend-84878824642.asia-northeast3.run.app/api/emergency-contacts', {
+        headers: {
+          'Authorization': 'Bearer TeachGuardSecureToken_KimTeacher2026'
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setContacts(data);
+      } else {
+        throw new Error('API request failed');
+      }
     } catch (error) {
       console.error('Failed to load contacts', error);
+    } finally {
       setLoading(false);
     }
   };

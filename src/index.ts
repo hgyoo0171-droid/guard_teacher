@@ -10,6 +10,7 @@ import './genkit.config';
 import { generateTrendReportFlow } from './trendAnalysisApi';
 import { semanticSearchFlow } from './caseMatcher';
 import { searchSchoolInfoFlow } from './neisApi';
+import { getEmergencyContactsFlow } from './emergencyDirectoryApi';
 
 dotenv.config();
 
@@ -491,6 +492,21 @@ app.get('/api/school-info', authenticateJWT as any, async (req: AuthenticatedReq
   } catch (error: any) {
     console.error('Error fetching school info:', error);
     res.status(500).json({ error: '학교 정보를 검색하는 중 오류가 발생했습니다.' });
+  }
+});
+
+// 공공데이터 - 전국 긴급 연락망 및 에듀힐링센터 검색 API
+app.get('/api/emergency-contacts', authenticateJWT as any, async (req: AuthenticatedRequest, res) => {
+  try {
+    const region = req.query.region as string;
+    const category = req.query.category as string;
+    const searchQuery = req.query.searchQuery as string;
+    
+    const result = await runFlow(getEmergencyContactsFlow, { region, category, searchQuery });
+    res.json(result);
+  } catch (error: any) {
+    console.error('Error fetching emergency contacts:', error);
+    res.status(500).json({ error: '긴급 연락망 정보를 검색하는 중 오류가 발생했습니다.' });
   }
 });
 
