@@ -36,8 +36,7 @@ export const intelligentResponseFlow = defineFlow(
     // (앞서 5-1 단계에서 만든 semanticSearchFlow를 재사용하여 RAG 파이프라인 구성)
     const searchResult = await runFlow(semanticSearchFlow, {
       query: input.query,
-      limit: 3,
-      tableName: 'public_incident_cases', // 판례나 매뉴얼이 적재된 메인 테이블
+      limit: 3
     });
 
     const contextCases = searchResult.results;

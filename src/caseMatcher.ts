@@ -51,7 +51,7 @@ export const semanticSearchFlow = defineFlow(
       const searchUrl = `https://www.law.go.kr/DRF/lawSearch.do?OC=${apiKey}&target=prec&type=JSON&query=${encodeURIComponent(extractedKeyword)}`;
       
       const response = await fetch(searchUrl);
-      const data = await response.json();
+      const data: any = await response.json();
 
       let precList = data?.PrecSearch?.prec || [];
       if (!Array.isArray(precList)) {
@@ -69,7 +69,7 @@ export const semanticSearchFlow = defineFlow(
           // 본문 상세 조회 API 호출 (판결 요지 추출용)
           const detailUrl = `https://www.law.go.kr/DRF/lawService.do?OC=${apiKey}&target=prec&type=JSON&ID=${prec.판례일련번호}`;
           const detailRes = await fetch(detailUrl);
-          const detailData = await detailRes.json();
+          const detailData: any = await detailRes.json();
           
           if (detailData?.PrecService?.판결요지) {
              // 판결 요지에 들어있는 HTML 태그 제거

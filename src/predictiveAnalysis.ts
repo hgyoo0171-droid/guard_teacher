@@ -26,14 +26,13 @@ export const predictiveOutcomeFlow = defineFlow(
   },
   async (input) => {
     // 1. 과거 교권보호위원회 결정 데이터 및 유사 사례 RAG 검색
-    // 예측의 정확도를 높이기 위해 검색 건수를 5건으로 넉넉하게 잡습니다.
-    const searchResult = await runFlow(semanticSearchFlow, {
+    // 2. 과거의 유사 사례 검색을 통해 실제 결과 참조 (RAG 패턴)
+    const similarCases = await runFlow(semanticSearchFlow, {
       query: input.query,
-      limit: 5,
-      tableName: 'public_incident_cases',
+      limit: 3
     });
 
-    const contextCases = searchResult.results;
+    const contextCases = similarCases.results;
 
     let contextText = '--- [참고 데이터: 과거 유사 사건 및 실제 교보위 처분 결과] ---\n';
     if (contextCases && contextCases.length > 0) {
