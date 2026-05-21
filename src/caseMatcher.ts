@@ -41,7 +41,26 @@ export const semanticSearchFlow = defineFlow(
 상황: "${input.query}"`;
 
       const geminiApiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY;
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
+      
+      // 구글 API에서 현재 사용 가능한 모델 목록을 동적으로 조회
+      const modelsRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${geminiApiKey}`);
+      const modelsData: any = await modelsRes.json();
+      
+      if (modelsData.error) {
+        throw new Error(`Gemini API 키 오류: ${modelsData.error.message}`);
+      }
+
+      // generateContent를 지원하는 gemini 모델 중 첫 번째를 자동 선택
+      const availableModel = modelsData.models?.find((m: any) => 
+        m.name.includes('gemini') && 
+        m.supportedGenerationMethods?.includes('generateContent')
+      );
+
+      if (!availableModel) {
+        throw new Error(`사용 가능한 Gemini 모델이 없습니다. 응답: ${JSON.stringify(modelsData)}`);
+      }
+
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/${availableModel.name}:generateContent?key=${geminiApiKey}`;
       const geminiRes = await fetch(geminiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
