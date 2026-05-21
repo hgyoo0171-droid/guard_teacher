@@ -119,18 +119,24 @@ export const semanticSearchFlow = defineFlow(
 검색된 법률 키워드: ${extractedKeyword}
 
 아래는 국가법령정보센터에서 검색된 실제 판례들입니다. 표면적으로는 학교와 무관해 보일 수 있으나 법리적으로는 동일한 죄목(${extractedKeyword})입니다.
-각 판례의 법리적 기준이 선생님의 상황에 어떻게 적용될 수 있는지(예: 성립 요건, 처벌 가능성 등)를 선생님이 이해하기 쉽게 3~4문장으로 해석해주세요.
+각 판례에 대해 다음 두 가지를 작성해주세요.
+1. 사건 요약 (caseSummary): 이 판례가 대체 어떤 사건이었는지 일반인이 이해하기 쉽게 1~2문장으로 요약해주세요. (예: "이 사건은 길거리에서 현수막을 통해 타인을 비방하여 명예훼손으로 처벌받은 사례입니다.")
+2. 맞춤형 법률 해석 (interpretation): 이 판례의 법리적 기준(성립 요건, 처벌 가능성 등)이 선생님의 상황에 어떻게 적용될 수 있는지 선생님이 이해하기 쉽게 3~4문장으로 해석해주세요.
 
 판례 데이터:
 ${JSON.stringify(rawResults)}
 
 반드시 아래와 같은 JSON 배열 형식으로만 응답하세요. (마크다운 백틱 없이 순수 JSON만 반환)
 [
-  { "id": "판례일련번호", "interpretation": "AI의 친절한 법률 해석..." }
+  { 
+    "id": "판례일련번호", 
+    "caseSummary": "사건의 쉬운 요약...", 
+    "interpretation": "AI의 친절한 법률 해석..." 
+  }
 ]
 `;
 
-      let interpretations: any = [];
+      let aiAnalyses: any = [];
       try {
         const interpretRes = await fetch(geminiUrl, {
           method: 'POST',
@@ -140,19 +146,21 @@ ${JSON.stringify(rawResults)}
         const interpretData: any = await interpretRes.json();
         const rawJsonText = interpretData?.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
         const cleanJsonText = rawJsonText.replace(/```json/g, '').replace(/```/g, '').trim();
-        interpretations = JSON.parse(cleanJsonText);
+        aiAnalyses = JSON.parse(cleanJsonText);
       } catch (e) {
         console.error('Gemini 해석 오류', e);
       }
 
       const results = rawResults.map((raw, index) => {
-        const interpretation = interpretations.find((i: any) => i.id === raw.id)?.interpretation || 
+        const analysis = aiAnalyses.find((i: any) => i.id === raw.id) || {};
+        const caseSummary = analysis.caseSummary || '사건 요약을 불러오지 못했습니다.';
+        const interpretation = analysis.interpretation || 
           `${extractedKeyword} 관련 판례입니다. 위 사례의 법리적 기준이 선생님의 상황에도 유사하게 적용될 수 있습니다.`;
           
         return {
           id: raw.id,
           title: raw.title,
-          content: `${raw.info}\n\n[💡 AI 맞춤형 법률 해석]\n${interpretation}\n\n[실제 판결 요지]\n${raw.summary || '판결 요지가 제공되지 않는 사건입니다.'}`,
+          content: `${raw.info}\n\n[📋 쉬운 사건 요약]\n${caseSummary}\n\n[💡 AI 맞춤형 법률 해석]\n${interpretation}\n\n[⚖️ 실제 판결 요지 원문]\n${raw.summary || '판결 요지가 제공되지 않는 사건입니다.'}`,
           similarity: 0.99 - (index * 0.03) 
         };
       });
