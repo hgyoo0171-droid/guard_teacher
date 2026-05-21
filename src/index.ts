@@ -1,7 +1,7 @@
 import express from 'express';
 import { defineFlow, runFlow } from '@genkit-ai/flow';
 import { generate } from '@genkit-ai/ai';
-import { gemini15Flash } from '@genkit-ai/googleai';
+import { geminiPro } from '@genkit-ai/googleai';
 import * as z from 'zod';
 import dotenv from 'dotenv';
 
@@ -109,7 +109,7 @@ export const teachGuardGuideFlow = defineFlow(
   },
   async (input) => {
     const response = await generate({
-      model: gemini15Flash,
+      model: geminiPro,
       prompt: `
         당신은 대한민국 교사의 권리를 보호하고 지원하는 전문 AI 법률 및 행동 가이드 'TeachGuard AI'입니다.
         다음 교권 침해 상황에 대해 교사가 취해야 할 신속하고 정확한 대처 가이드를 제공해 주세요.
@@ -291,7 +291,7 @@ export const contentModerationFlow = defineFlow(
   async (input) => {
     // 실제 서비스에서는 Gemini 모델에게 텍스트를 검사하도록 프롬프트를 전송합니다.
     const response = await generate({
-      model: gemini15Flash,
+      model: geminiPro,
       prompt: `
         당신은 교사 익명 커뮤니티의 자동 모더레이터입니다.
         다음 텍스트에 심한 욕설, 타인에 대한 명백한 비방, 혐오 표현, 성적 불쾌감을 주는 내용이 포함되어 있는지 평가하세요.
