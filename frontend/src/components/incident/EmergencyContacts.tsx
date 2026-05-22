@@ -5,26 +5,41 @@ import { Card } from '../ui/Card';
 import { Typography } from '../ui/Typography';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
+import { useAuth } from '@/context/AuthContext';
 
 export const EmergencyContacts: React.FC = () => {
+  const { getToken } = useAuth();
   const [address, setAddress] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [contacts, setContacts] = useState<any>(null);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!address.trim()) return;
 
+    setErrorMsg('');
+
     setIsSearching(true);
     try {
+      const token = await getToken();
+      if (!token) throw new Error('로그인이 필요합니다.');
+
       const region = address.split(' ').slice(0, 2).join(' '); // 시/구 추출
       const response = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/emergency-contacts?region=${encodeURIComponent(region)}&category=police&searchQuery=${encodeURIComponent(address)}`, {
-        headers: { 'Authorization': 'Bearer TeachGuardSecureToken_KimTeacher2026' }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
+      
       const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || '긴급 지원망 정보를 가져오는데 실패했습니다.');
+      }
+      
       setContacts(data.results || []);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setErrorMsg(err.message || '오류가 발생했습니다.');
     } finally {
       setIsSearching(false);
     }
@@ -56,6 +71,12 @@ export const EmergencyContacts: React.FC = () => {
       {isSearching && (
         <div className="text-center py-4 text-red-500 animate-pulse text-sm font-bold">
           공공데이터포털(DATA.GO.KR)에서 관할 관서를 실시간으로 찾고 있습니다...
+        </div>
+      )}
+
+      {errorMsg && (
+        <div className="text-center py-4 text-red-600 text-sm font-bold bg-red-100 rounded-xl border border-red-200">
+          오류: {errorMsg}
         </div>
       )}
 

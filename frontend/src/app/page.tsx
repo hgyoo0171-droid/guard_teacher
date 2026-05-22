@@ -113,12 +113,15 @@ export default function Home() {
     setIsAiTyping(true);
 
     try {
+      const token = await getToken();
+      if (!token) throw new Error('로그인이 필요합니다.');
+
       // 백엔드의 AI 시맨틱 검색 API 엔드포인트 호출
       const response = await fetch('https://teachguard-backend-84878824642.asia-northeast3.run.app/api/cases/match', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer TeachGuardSecureToken_KimTeacher2026'
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ query: userMessage, limit: 2 })
       });
