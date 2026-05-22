@@ -15,7 +15,15 @@ import { Textarea } from '../components/ui/Textarea';
 import { Card } from '../components/ui/Card';
 import { LoadingSpinner } from '../components/ui/LoadingSpinner';
 
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+
 export default function Home() {
+  const router = useRouter();
+  const { user, loading } = useAuth();
+  
   // 메인 액티브 탭 상태 관리
   const [activePath, setActivePath] = useState('dashboard');
   
@@ -43,10 +51,14 @@ export default function Home() {
   const handleSchoolSearch = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (!schoolSearchInput) return;
+    
+    const token = await getToken();
+    if (!token) return alert('로그인이 필요합니다.');
+
     setSearchingSchool(true);
     try {
       const response = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/school-info?schoolName=${encodeURIComponent(schoolSearchInput)}`, {
-        headers: { 'Authorization': 'Bearer TeachGuardSecureToken_KimTeacher2026' }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
         const data = await response.json();
@@ -462,13 +474,36 @@ export default function Home() {
             <Input label="인증 상태" defaultValue="NEIS 교사 인증 완료" readOnly className="text-emerald-600 font-bold" />
           </div>
 
-          <div className="flex justify-end pt-2">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+            <Button 
+              type="button" 
+              variant="outline"
+              onClick={async () => {
+                await signOut(auth);
+                router.push('/login');
+              }}
+            >
+              로그아웃
+            </Button>
             <Button type="submit" variant="primary">설정 저장</Button>
           </div>
         </form>
       </Card>
     </div>
   );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="lg" className="border-t-brand-indigo" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    router.push('/login');
+    return null;
+  }
 
   // 상태값에 기반한 메인 탭 렌더링 선택자
   const renderActiveContent = () => {

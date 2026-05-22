@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   description: "교권 침해 상황에 처한 교사들에게 신속한 정보, 맞춤형 가이드 및 심리 상담 지원을 제공합니다.",
 };
 
+import { AuthProvider } from '@/context/AuthContext';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -14,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="antialiased selection:bg-brand-indigo-light selection:text-white">
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

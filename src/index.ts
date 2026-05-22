@@ -11,6 +11,7 @@ import { generateTrendReportFlow } from './trendAnalysisApi';
 import { semanticSearchFlow } from './caseMatcher';
 import { searchSchoolInfoFlow } from './neisApi';
 import { getEmergencyContactsFlow } from './emergencyDirectoryApi';
+import { adminAuth } from './firebaseAdmin';
 
 dotenv.config();
 
@@ -38,28 +39,37 @@ interface AuthenticatedRequest extends express.Request {
   };
 }
 
-// 사용자 인증 검증 미들웨어 스켈레톤 (보안 접근 제어 구현)
-const authenticateJWT = (req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) => {
+// 사용자 인증 검증 미들웨어 (Firebase Auth 연동)
+const authenticateJWT = async (req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) => {
   const authHeader = req.headers.authorization;
 
-  if (authHeader) {
-    // Authorization: Bearer <token> 형태 검증
+  if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.split(' ')[1];
     
-    // 모의 토큰 검증 로직 (실제 서비스에서는 jwt.verify(token, JWT_SECRET) 등을 활용하여 보안 검증 수행)
-    const expectedToken = 'TeachGuardSecureToken_KimTeacher2026';
-    if (token === expectedToken) {
-      req.user = {
-        id: 'user-uuid-1234',
-        email: 'teacher@school.go.kr',
-        name: '김선생',
-        schoolName: '서울한국초등학교'
-      };
-      return next();
+    try {
+      // Firebase Admin이 초기화되어 있으면 실제 토큰 검증 수행
+      if (adminAuth) {
+        const decodedToken = await adminAuth.verifyIdToken(token);
+        req.user = {
+          id: decodedToken.uid,
+          email: decodedToken.email || 'unknown@domain.com',
+          name: decodedToken.name || decodedToken.email?.split('@')[0] || '익명 교사',
+          schoolName: '미설정 학교'
+        };
+        return next();
+      } else {
+        // 로컬 개발/테스트용: Firebase 설정이 누락되어 있을 때 데모 작동 보장
+        if (token === 'TeachGuardSecureToken_KimTeacher2026') {
+           req.user = { id: 'user-uuid-1234', email: 'teacher@school.go.kr', name: '김선생', schoolName: '서울한국초등학교' };
+           return next();
+        }
+      }
+    } catch (error) {
+      console.error('Firebase token verification error:', error);
+      return res.status(401).json({ error: 'Unauthorized', message: '토큰이 만료되었거나 유효하지 않습니다.' });
     }
   }
 
-  // 인증 토큰이 없거나 유효하지 않은 경우 401 Unauthorized 반환 (사용자 비공개 보안 관리)
   return res.status(401).json({ 
     error: 'Unauthorized', 
     message: '인증 토큰이 누락되었거나 유효하지 않습니다. 비공개 사건 진행 정보에 접근할 권한이 없습니다.' 
