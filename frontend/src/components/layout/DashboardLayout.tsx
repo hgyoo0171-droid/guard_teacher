@@ -16,19 +16,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, acti
   const getActiveTitle = () => {
     switch (activePath) {
       case 'dashboard':
-        return 'TeachGuard AI 대시보드';
-      case 'incident-input':
-        return '교권 침해 기록지 작성';
-      case 'case-matcher':
-        return '유사 판례 / 사례 매칭';
+        return '홈 (종합 대시보드)';
+      case 'incident-log':
+        return '📁 나의 사건 수첩';
       case 'ai-consultation':
-        return 'AI 안심 상담소';
-      case 'guidelines':
-        return '공공 가이드라인 및 법령 뷰어';
+        return '💬 AI 안심 상담소';
       case 'settings':
-        return '계정 설정';
+        return '⚙️ 설정 및 매뉴얼';
       default:
-        return '대시보드';
+        return '홈 (종합 대시보드)';
     }
   };
 

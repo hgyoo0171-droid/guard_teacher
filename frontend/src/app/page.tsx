@@ -38,9 +38,10 @@ export default function Home() {
 
   // 3. AI 상담 모의 채팅 로그
   const [chatInput, setChatInput] = useState('');
-  const [chatLog, setChatLog] = useState([
-    { role: 'ai', text: '안녕하세요! 선생님의 권리와 마음을 치유하는 TeachGuard AI입니다. 현재 처하신 곤란한 교권 침해 상황에 대해 편하게 말씀해 주시면, 법적 조력과 위로를 드리겠습니다.' }
+  const [chatLog, setChatLog] = useState<any[]>([
+    { role: 'ai', text: '안녕하세요! 선생님, 어떤 교권 침해 상황을 겪으셨나요? 상황을 말씀해 주시면 위로와 함께 유사 판례를 찾아드립니다.' }
   ]);
+  const [isAiTyping, setIsAiTyping] = useState(false);
 
   // 설정 화면 관리용 상태 추가
   const [teacherPosition, setTeacherPosition] = useState('');
@@ -109,16 +110,33 @@ export default function Home() {
     const userMessage = chatInput;
     setChatLog((prev) => [...prev, { role: 'user', text: userMessage }]);
     setChatInput('');
+    setIsAiTyping(true);
 
     setTimeout(() => {
       setChatLog((prev) => [
         ...prev,
         {
           role: 'ai',
-          text: `선생님께서 서술해 주신 내용에 대해 1차적인 조언을 드립니다. 교권 침해가 의심되는 상황이라면 가장 먼저 증거(녹음, 문자 캡처 등)를 확보하시고, 즉각 소속 학교장이나 교무실에 구두 또는 서면으로 상황을 보고하시길 권장합니다. 교보위(교권보호위원회) 소집이 필요하실 경우 대처 솔루션을 통해 양식 작성을 도와드리겠습니다. 추가로 궁금한 점이 있으신가요?`
+          text: `많이 놀라셨겠습니다 선생님. 해당 상황은 모욕죄 및 교원지위법 위반 소지가 있습니다. 우선 관련된 유사 판례를 아래에 찾아보았습니다. 판례를 참고하시고, '나의 사건 수첩'에 꼭 상황을 먼저 기록해 두세요.`
+        },
+        {
+          role: 'cases',
+          cases: [
+            {
+              title: '학부모의 악의적 고성 및 폭언',
+              content: '학부모가 다수의 학생 및 교사가 보는 가운데 교무실에서 교사에게 고함을 지르며 모욕함.\n[결과] 교원지위법 위반으로 관할 수사기관에 고발조치 됨.',
+              similarity: 92
+            },
+            {
+              title: '반복적인 문자 협박 및 통화 폭언',
+              content: '지속적으로 교사의 개인 연락처로 늦은 밤 협박성 문자와 통화를 일삼음.\n[결과] 특별 교육 이수 및 접근 금지, 치료비 우선 보장 완료.',
+              similarity: 87
+            }
+          ]
         }
       ]);
-    }, 1000);
+      setIsAiTyping(false);
+    }, 2000);
   };
 
   // 가해자 타입 한글 매핑
@@ -154,112 +172,67 @@ export default function Home() {
     const displayName = user?.displayName || user?.email?.split('@')[0] || '익명 교사';
 
     return (
-    <div className="space-y-8">
-      {/* 웰컴 배너 */}
-      <div className="relative overflow-hidden rounded-3xl p-8 bg-gradient-to-r from-brand-indigo via-brand-indigo/90 to-brand-azure text-white shadow-xl shadow-brand-indigo/15 animate-smooth-height">
-        <div className="absolute right-0 bottom-0 opacity-10 transform translate-y-6 translate-x-6">
-          <svg className="w-80 h-80" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/>
+    <div className="space-y-8 max-w-5xl mx-auto">
+      {/* 웰컴 배너 - 텍스트 단순화 */}
+      <div className="rounded-3xl p-8 bg-brand-indigo text-white shadow-lg flex flex-col items-center text-center space-y-3">
+        <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-2">
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
           </svg>
         </div>
-        <div className="max-w-xl space-y-4">
-          <span className="inline-flex px-3 py-1 rounded-full text-xs font-bold tracking-wider bg-white/10">
-            Teacher Care & Legal Support
-          </span>
-          <Typography variant="h1" className="text-white text-3xl md:text-4xl font-extrabold tracking-tight">
-            {displayName} 선생님, 오늘도 고생 많으셨습니다.
-          </Typography>
-          <Typography variant="lead" className="text-slate-100 text-sm md:text-base leading-relaxed">
-            안심하고 교육활동에 전념하실 수 있도록 TeachGuard AI가 실시간으로 법적 대처 방안과 심리 안전가이드를 단단히 지지해 드립니다.
-          </Typography>
-        </div>
+        <Typography variant="h1" className="text-white text-3xl font-extrabold">
+          {displayName} 선생님, 안심하세요.
+        </Typography>
+        <Typography variant="p" className="text-slate-100 text-lg">
+          지금 당장 필요하신 기능을 선택해 주세요.
+        </Typography>
       </div>
 
-      {/* 통계 요약 영역 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-3xl border border-brand-indigo/20 shadow-sm flex flex-col justify-between">
-            <Typography variant="detail" className="font-bold text-slate-400">나의 안심 교권 지수</Typography>
-            <Typography variant="h1" className="text-slate-800 font-extrabold mt-2 tracking-tighter">100%</Typography>
-            <Typography variant="detail" className="text-slate-400 mt-2 flex items-center gap-1">
-              <span className="text-emerald-500">▲</span> 완벽한 보호 상태
-            </Typography>
-        </div>
+      {/* 퀵 액션 거대 버튼 2개 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
-        <Card hoverable className="flex flex-col justify-between p-6 h-36 bg-white border-l-4 border-l-brand-azure animate-smooth-height">
-          <div>
-            <Typography variant="detail" className="font-bold text-slate-400">기록된 침해 기록</Typography>
-            <Typography variant="h2" className="mt-1 text-slate-800 font-serif">
-              {formSubmitted ? '1 건' : '0 건'}
-            </Typography>
+        {/* 사건 수첩 가기 */}
+        <button 
+          onClick={() => setActivePath('incident-log')}
+          className="group flex flex-col items-center justify-center p-12 bg-white rounded-3xl shadow-md border-2 border-slate-100 hover:border-brand-indigo hover:shadow-xl transition-all duration-300 text-center"
+        >
+          <div className="w-24 h-24 bg-brand-indigo/10 rounded-full flex items-center justify-center text-brand-indigo group-hover:scale-110 transition-transform duration-300 mb-6">
+            <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
           </div>
-          <Typography variant="detail" className="text-brand-indigo font-semibold">보관함에 안심 암호화 됨</Typography>
-        </Card>
+          <Typography variant="h2" className="text-slate-800 text-2xl font-black mb-2 group-hover:text-brand-indigo">나의 사건 수첩 작성</Typography>
+          <Typography variant="p" className="text-slate-500 text-base">침해 사실을 기록하고 진행 상황을 추적합니다.</Typography>
+        </button>
 
-        <div className="bg-white p-6 rounded-3xl border border-emerald-500/20 shadow-sm flex flex-col justify-between relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-2 h-full bg-emerald-500" />
-            <Typography variant="detail" className="font-bold text-slate-400">AI 판례 RAG 검색 매칭</Typography>
-            <Typography variant="h1" className="text-slate-800 font-extrabold mt-2 tracking-tighter">0 건</Typography>
-            <Typography variant="detail" className="text-slate-400 mt-2">유사 판례 검색을 시작해보세요</Typography>
-        </div>
-      </div>
-
-      {/* 예방 수칙 및 안내 F-패턴 */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* 침해 대처 매뉴얼 피드 */}
-        <Card hoverable={false} className="lg:col-span-2 space-y-4 bg-white">
-          <Typography variant="h3" className="text-slate-800">교권 침해 발생 시 즉각 3단계 행동 수칙</Typography>
-          <div className="space-y-4">
-            <div className="flex gap-4">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-brand-indigo/10 text-brand-indigo font-black text-sm shrink-0">1</div>
-              <div>
-                <Typography variant="h5">상황의 서면/녹음 증거 즉각 채집</Typography>
-                <Typography variant="p" className="text-sm text-slate-500 mt-1">전화 통화 녹음 고지, 모욕적인 문자메세지 및 SNS 캡처본을 안전하게 로컬 및 백업 드라이브에 다중 보관합니다.</Typography>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-brand-indigo/10 text-brand-indigo font-black text-sm shrink-0">2</div>
-              <div>
-                <Typography variant="h5">피해 현장 격리 및 교장/관리자 보고</Typography>
-                <Typography variant="p" className="text-sm text-slate-500 mt-1">학부모 또는 학생과의 즉각적인 분리를 요청하고, 구두 및 서면으로 소속 학교 교무실 관리자에게 보고서를 제출합니다.</Typography>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-brand-indigo/10 text-brand-indigo font-black text-sm shrink-0">3</div>
-              <div>
-                <Typography variant="h5">AI 안심 도구 및 교원센터 상담 연계</Typography>
-                <Typography variant="p" className="text-sm text-slate-500 mt-1">TeachGuard AI가 추천해 주는 맞춤형 대응 문건 양식을 통해 교권보호위원회(교보위) 소집 신청서를 신속히 다듬으십시오.</Typography>
-              </div>
-            </div>
+        {/* AI 상담 가기 */}
+        <button 
+          onClick={() => setActivePath('ai-consultation')}
+          className="group flex flex-col items-center justify-center p-12 bg-white rounded-3xl shadow-md border-2 border-slate-100 hover:border-brand-azure hover:shadow-xl transition-all duration-300 text-center"
+        >
+          <div className="w-24 h-24 bg-brand-azure/10 rounded-full flex items-center justify-center text-brand-azure group-hover:scale-110 transition-transform duration-300 mb-6">
+            <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 4.418 9 8z" />
+            </svg>
           </div>
-        </Card>
+          <Typography variant="h2" className="text-slate-800 text-2xl font-black mb-2 group-hover:text-brand-azure">AI 챗봇 상담 및 판례</Typography>
+          <Typography variant="p" className="text-slate-500 text-base">AI에게 위로를 받고 관련된 판례를 확인합니다.</Typography>
+        </button>
 
-        {/* 법률 정보 카드 뉴스 */}
-        <Card className="bg-brand-indigo text-white flex flex-col justify-between p-6">
-          <div className="space-y-3">
-            <span className="px-2 py-0.5 text-[10px] font-bold tracking-wide rounded-full bg-white/20">금주의 법령 팁</span>
-            <Typography variant="h3" className="text-white text-lg">교원지위법 제15조란?</Typography>
-            <Typography variant="p" className="text-slate-100 text-sm leading-relaxed">
-              관할 교육청은 교권침해 피해 교사에게 치료비 및 심리상담 요령을 우선 지원해야 하며, 침해한 학부모에게는 특별 교육 이수 또는 과태료가 부과될 수 있습니다.
-            </Typography>
-          </div>
-          <Typography variant="detail" className="text-brand-grey-light font-bold mt-4 cursor-pointer">자세히 알아보기 →</Typography>
-        </Card>
-        
       </div>
     </div>
     );
   };
 
   // ============================================
-  // 2. 침해 기록지 작성 뷰 (Zod 폼 컴포넌트 이식)
+  // 2. 침해 기록지 작성 뷰
   // ============================================
   const renderIncidentInput = () => (
-    <div className="max-w-3xl mx-auto space-y-6 animate-smooth-height">
-      <div className="space-y-1">
-        <Typography variant="h2" className="text-brand-indigo">교권 침해 기록지 작성</Typography>
-        <Typography variant="p" className="text-slate-400 text-sm">
-          사건의 시간, 가해자 대분류, 구체적 장소, 다중 침해 종류를 Zod 유효성 검사 기반으로 정밀하게 기록하고 암호화합니다.
+    <div className="max-w-4xl mx-auto space-y-6 animate-smooth-height">
+      <div className="space-y-1 text-center mb-8">
+        <Typography variant="h1" className="text-brand-indigo font-extrabold text-3xl">나의 사건 수첩</Typography>
+        <Typography variant="p" className="text-slate-500 text-lg">
+          사건을 기록하고 암호화하여 안전하게 보관합니다.
         </Typography>
       </div>
 
@@ -268,14 +241,14 @@ export default function Home() {
           
           {/* 상단 축하 배너 */}
           <div className="flex flex-col items-center text-center pb-4 border-b border-slate-100 dark:border-slate-800">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 mb-3 shadow-sm">
-              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 mb-3 shadow-sm">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <Typography variant="h3" className="text-slate-800 dark:text-slate-100">암호화 제출 완료!</Typography>
-            <Typography variant="p" className="text-sm text-slate-500 max-w-sm mt-1">
-              선생님의 교권 침해 기록서가 데이터베이스에 Zod 유효성 통과 및 안전 보관되었습니다.
+            <Typography variant="h3" className="text-slate-800 dark:text-slate-100 text-2xl">안전하게 보관되었습니다!</Typography>
+            <Typography variant="p" className="text-base text-slate-500 max-w-sm mt-1">
+              선생님의 기록이 데이터베이스에 암호화되어 저장되었습니다.
             </Typography>
           </div>
 
@@ -363,47 +336,77 @@ export default function Home() {
   // ============================================
 
   // ============================================
-  // 4. AI 안심 상담소 뷰
+  // 4. AI 안심 상담소 뷰 (채팅 + 판례 통합)
   // ============================================
   const renderAiConsultation = () => (
     <div className="max-w-4xl mx-auto space-y-6 font-sans">
-      <div className="space-y-1">
-        <Typography variant="h2" className="text-brand-indigo">AI 안심 상담소</Typography>
-        <Typography variant="p" className="text-slate-400 text-sm">전문 법률 지식 and 심리 위로 프로세스가 결합된 실시간 인공지능 지원 대화 서비스입니다.</Typography>
+      <div className="space-y-1 text-center mb-8">
+        <Typography variant="h1" className="text-brand-indigo font-extrabold text-3xl">AI 안심 상담소</Typography>
+        <Typography variant="p" className="text-slate-500 text-lg">상황을 말씀해주시면 AI가 대처법과 유사 판례를 즉시 찾아드립니다.</Typography>
       </div>
 
-      <Card hoverable={false} className="bg-white flex flex-col h-[550px] p-0 overflow-hidden border border-slate-100">
+      <div className="bg-white rounded-3xl shadow-xl border border-slate-100 flex flex-col h-[650px] overflow-hidden">
         
         {/* 채팅 로그 출력 영역 */}
-        <div className="flex-1 p-6 space-y-4 overflow-y-auto bg-slate-50/50">
+        <div className="flex-1 p-6 space-y-6 overflow-y-auto bg-slate-50/50">
           {chatLog.map((chat, idx) => (
             <div key={idx} className={`flex ${chat.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-md
-                ${chat.role === 'user' 
-                  ? 'bg-brand-indigo text-white rounded-tr-none' 
-                  : 'bg-white text-slate-800 rounded-tl-none border border-slate-100'}`}
-              >
-                {chat.text}
-              </div>
+              
+              {chat.role === 'cases' ? (
+                <div className="w-full max-w-[85%] space-y-3 pl-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-brand-indigo text-xl">⚖️</span>
+                    <span className="font-bold text-slate-700">AI가 찾은 유사 판례</span>
+                  </div>
+                  {chat.cases.map((c: any, i: number) => (
+                    <Card key={i} hoverable={false} className="bg-white border-l-4 border-l-brand-indigo p-4 shadow-sm">
+                      <div className="flex justify-between items-start mb-2">
+                        <Typography variant="h4" className="font-bold text-slate-800">{c.title}</Typography>
+                        <span className="px-2 py-1 bg-brand-indigo/10 text-brand-indigo rounded-lg text-xs font-black">유사도 {c.similarity}%</span>
+                      </div>
+                      <Typography variant="p" className="text-sm text-slate-600 whitespace-pre-wrap">{c.content}</Typography>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className={`max-w-[80%] rounded-3xl px-5 py-4 text-base font-medium leading-relaxed shadow-sm
+                  ${chat.role === 'user' 
+                    ? 'bg-brand-indigo text-white rounded-br-sm' 
+                    : 'bg-white text-slate-800 border border-slate-200 rounded-bl-sm'}`}
+                >
+                  {chat.text}
+                </div>
+              )}
+
             </div>
           ))}
+          {isAiTyping && (
+             <div className="flex justify-start">
+               <div className="bg-white border border-slate-200 rounded-3xl rounded-bl-sm px-5 py-4 flex items-center gap-2">
+                 <div className="w-2 h-2 bg-brand-indigo/50 rounded-full animate-bounce"></div>
+                 <div className="w-2 h-2 bg-brand-indigo/50 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                 <div className="w-2 h-2 bg-brand-indigo/50 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                 <span className="text-slate-400 text-sm ml-2 font-bold">판례를 검색하고 있습니다...</span>
+               </div>
+             </div>
+          )}
         </div>
 
         {/* 채팅 입력 폼 영역 */}
-        <form onSubmit={handleSendMessage} className="p-4 border-t border-slate-100 bg-white flex gap-3">
-          <div className="flex-1">
-            <Input 
-              placeholder="상황에 해당하는 궁금증이나 질문을 작성해 주세요... (예: 증거 수집은 어떻게 하나요?)" 
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-            />
-          </div>
-          <Button type="submit" variant="primary" className="px-6 rounded-xl">
-            전송
+        <form onSubmit={handleSendMessage} className="p-6 border-t border-slate-100 bg-white flex gap-3">
+          <Input 
+            placeholder="겪으신 상황을 대화하듯 편하게 입력해주세요." 
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            className="rounded-2xl text-lg py-6 shadow-inner bg-slate-50"
+            disabled={isAiTyping}
+          />
+          <Button type="submit" variant="primary" className="px-8 rounded-2xl text-lg font-bold shadow-md" disabled={isAiTyping}>
+            보내기
           </Button>
         </form>
 
-      </Card>
+      </div>
     </div>
   );
 
@@ -412,9 +415,9 @@ export default function Home() {
   // ============================================
   const renderGuidelines = () => (
     <div className="max-w-3xl mx-auto space-y-6 font-sans">
-      <div className="space-y-1">
-        <Typography variant="h2" className="text-brand-indigo">공공 가이드라인 및 법령 뷰어</Typography>
-        <Typography variant="p" className="text-slate-400 text-sm">대한민국 교원의 지위와 권익을 수호하는 핵심 법령 자료실입니다.</Typography>
+      <div className="space-y-1 text-center mb-8">
+        <Typography variant="h1" className="text-brand-indigo font-extrabold text-3xl">공공 가이드라인 및 법령 뷰어</Typography>
+        <Typography variant="p" className="text-slate-500 text-lg">대한민국 교원의 지위와 권익을 수호하는 핵심 법령 자료실입니다.</Typography>
       </div>
 
       <Card hoverable={false} className="bg-white space-y-4">
@@ -461,9 +464,9 @@ export default function Home() {
     
     return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <div className="space-y-1">
-        <Typography variant="h2" className="text-brand-indigo">계정 및 소속 학교 설정</Typography>
-        <Typography variant="p" className="text-slate-400 text-sm">교권 보호 서비스 연계를 위한 기본 정보를 수정합니다.</Typography>
+      <div className="space-y-1 text-center mb-8">
+        <Typography variant="h1" className="text-brand-indigo font-extrabold text-3xl">계정 및 소속 학교 설정</Typography>
+        <Typography variant="p" className="text-slate-500 text-lg">교권 보호 서비스 연계를 위한 기본 정보를 수정합니다.</Typography>
       </div>
 
       <Card hoverable={false} className="bg-white p-8">
@@ -529,22 +532,38 @@ export default function Home() {
     switch (activePath) {
       case 'dashboard':
         return renderDashboard();
-      case 'incident-input':
-        return renderIncidentInput();
-      case 'case-progress':
-        return <CaseProgressLogger />;
-      case 'case-matcher':
-        return <CaseMatcher />;
-      case 'emergency-directory':
-        return <EmergencyContacts />;
-      case 'trend-report':
-        return <TrendAnalysisReport />;
+      case 'incident-log':
+        return (
+          <div className="space-y-12 max-w-4xl mx-auto">
+            {renderIncidentInput()}
+            <hr className="border-slate-200 dark:border-slate-800" />
+            <div className="space-y-4">
+              <Typography variant="h2" className="text-brand-indigo px-4 font-bold text-2xl">사건 진행 상황 추적</Typography>
+              <CaseProgressLogger />
+            </div>
+          </div>
+        );
       case 'ai-consultation':
-        return renderAiConsultation();
-      case 'guidelines':
-        return renderGuidelines();
+        return (
+          <div className="space-y-12">
+            {renderAiConsultation()}
+            <hr className="border-slate-200 dark:border-slate-800" />
+            <div className="space-y-4">
+              <Typography variant="h2" className="text-brand-indigo px-4">AI 자동 판례 매칭 결과</Typography>
+              <CaseMatcher />
+            </div>
+          </div>
+        );
       case 'settings':
-        return renderSettings();
+        return (
+          <div className="space-y-12">
+            {renderSettings()}
+            <hr className="border-slate-200 dark:border-slate-800" />
+            {renderGuidelines()}
+            <hr className="border-slate-200 dark:border-slate-800" />
+            <EmergencyContacts />
+          </div>
+        );
       default:
         return renderDashboard();
     }
