@@ -7,7 +7,11 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { useAuth } from '@/context/AuthContext';
 
-export const SchoolIntegration: React.FC = () => {
+interface SchoolIntegrationProps {
+  onSchoolSelect?: (school: any) => void;
+}
+
+export const SchoolIntegration: React.FC<SchoolIntegrationProps> = ({ onSchoolSelect }) => {
   const { getToken } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [schools, setSchools] = useState<any[]>([]);
@@ -40,6 +44,9 @@ export const SchoolIntegration: React.FC = () => {
 
   const handleSave = (school: any) => {
     setSavedSchool(school);
+    if (onSchoolSelect) {
+      onSchoolSelect(school);
+    }
     // 향후 로컬스토리지나 서버에 저장
   };
 

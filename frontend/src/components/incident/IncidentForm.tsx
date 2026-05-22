@@ -9,6 +9,7 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Textarea } from '../ui/Textarea';
 import { Card } from '../ui/Card';
+import { useAuth } from '@/context/AuthContext';
 
 // 1. Zod 유효성 검사 스키마 정의
 export const incidentSchema = z.object({
@@ -35,6 +36,9 @@ interface IncidentFormProps {
 }
 
 export const IncidentForm: React.FC<IncidentFormProps> = ({ onSuccess }) => {
+  const { user } = useAuth();
+  const displayName = user?.displayName || user?.email?.split('@')[0] || '익명 교사';
+
   const {
     register,
     handleSubmit,
@@ -44,7 +48,7 @@ export const IncidentForm: React.FC<IncidentFormProps> = ({ onSuccess }) => {
   } = useForm<IncidentFormValues>({
     resolver: zodResolver(incidentSchema),
     defaultValues: {
-      teacherName: '김선생',
+      teacherName: displayName,
       incidentDate: new Date().toISOString().split('T')[0],
       incidentTime: '14:00',
       natures: [],

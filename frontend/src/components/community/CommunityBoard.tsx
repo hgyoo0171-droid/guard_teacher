@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { PostDetail } from './PostDetail';
 import { CreatePostModal } from './CreatePostModal';
+import { useAuth } from '@/context/AuthContext';
 
 interface Post {
   id: string;
@@ -19,6 +20,7 @@ export function CommunityBoard() {
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { getToken } = useAuth();
 
   useEffect(() => {
     fetchPosts();
@@ -27,9 +29,11 @@ export function CommunityBoard() {
   const fetchPosts = async () => {
     try {
       setLoading(true);
+      const token = await getToken();
+      if (!token) return;
       const response = await fetch('https://teachguard-backend-84878824642.asia-northeast3.run.app/api/community/posts', {
         headers: {
-          'Authorization': 'Bearer TeachGuardSecureToken_KimTeacher2026'
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {
@@ -44,11 +48,16 @@ export function CommunityBoard() {
   };
 
   const handleCreatePost = async (title: string, content: string) => {
+    const token = await getToken();
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
     const response = await fetch('https://teachguard-backend-84878824642.asia-northeast3.run.app/api/community/posts', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer TeachGuardSecureToken_KimTeacher2026'
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({ title, content })
     });
@@ -65,10 +74,12 @@ export function CommunityBoard() {
     if (!confirm('정말 삭제하시겠습니까?')) return;
     
     try {
+      const token = await getToken();
+      if (!token) return;
       const response = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/community/posts/${id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': 'Bearer TeachGuardSecureToken_KimTeacher2026'
+          'Authorization': `Bearer ${token}`
         }
       });
       

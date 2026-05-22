@@ -39,8 +39,12 @@ export default function Home() {
   // 3. AI 상담 모의 채팅 로그
   const [chatInput, setChatInput] = useState('');
   const [chatLog, setChatLog] = useState([
-    { role: 'ai', text: '안녕하세요! 선생님의 권리와 마음을 치유하는 TeachGuard AI입니다. 현재 처하신 곤란한 교권 침해 상황에 대해 편하게 말씀해 주시면, 행동 지침과 법적 조력을 안내해 드립니다.' }
+    { role: 'ai', text: '안녕하세요! 선생님의 권리와 마음을 치유하는 TeachGuard AI입니다. 현재 처하신 곤란한 교권 침해 상황에 대해 편하게 말씀해 주시면, 법적 조력과 위로를 드리겠습니다.' }
   ]);
+
+  // 설정 화면 관리용 상태 추가
+  const [teacherPosition, setTeacherPosition] = useState('');
+  const [mySchool, setMySchool] = useState<any>(null);
 
   // 4. 학교 검색 및 사용자 지역 상태 (공공데이터 연동)
   const [userRegion, setUserRegion] = useState('전체');
@@ -111,7 +115,7 @@ export default function Home() {
         ...prev,
         {
           role: 'ai',
-          text: `선생님께서 서술해 주신 "${userMessage.substring(0, 15)}..." 상황은 교원지위법 및 형법상 '모욕죄' 또는 '공무집행방해죄'에 해당할 소지가 큽니다. 즉각적인 1단계 행동 조치로 통화 및 메세지 등 모든 대화 내역을 고화질 캡처 및 녹음 보관하시고, 학교장에게 서면 피해 보고서를 제출하여 교권보호위원회 소집을 정식 청구하십시오. 저희 AI 대처 솔루션이 문건 초안 작성을 전면 지원해 드립니다.`
+          text: `선생님께서 서술해 주신 내용에 대해 1차적인 조언을 드립니다. 교권 침해가 의심되는 상황이라면 가장 먼저 증거(녹음, 문자 캡처 등)를 확보하시고, 즉각 소속 학교장이나 교무실에 구두 또는 서면으로 상황을 보고하시길 권장합니다. 교보위(교권보호위원회) 소집이 필요하실 경우 대처 솔루션을 통해 양식 작성을 도와드리겠습니다. 추가로 궁금한 점이 있으신가요?`
         }
       ]);
     }, 1000);
@@ -470,12 +474,22 @@ export default function Home() {
           </div>
           
           
-          <SchoolIntegration />
+          <SchoolIntegration onSchoolSelect={setMySchool} />
 
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="담당 직급" defaultValue="5학년 2반 담임" />
-            <Input label="인증 상태" defaultValue="NEIS 교사 인증 완료" readOnly className="text-emerald-600 font-bold" />
+            <Input 
+              label="담당 직급" 
+              placeholder="예: 5학년 2반 담임" 
+              value={teacherPosition}
+              onChange={(e) => setTeacherPosition(e.target.value)}
+            />
+            <Input 
+              label="인증 상태" 
+              value={mySchool ? "NEIS 소속 연동 완료" : "미인증"} 
+              readOnly 
+              className={mySchool ? "text-emerald-600 font-bold" : "text-slate-400"} 
+            />
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">

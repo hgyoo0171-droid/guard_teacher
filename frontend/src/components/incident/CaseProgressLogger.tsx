@@ -15,13 +15,15 @@ import {
   CreateProgressLogInput,
   MOCK_PROGRESS_LOGS
 } from '@/lib/caseProgressApi';
+import { useAuth } from '@/context/AuthContext';
 
 export const CaseProgressLogger: React.FC = () => {
+  const { getToken } = useAuth();
   // 백엔드 API 주소 설정 (포트 3000 Express 서버 대응)
   const API_BASE = 'https://teachguard-backend-84878824642.asia-northeast3.run.app';
   
   // 모의 사용자 보안 토큰 (NEIS 인증 연계 가정)
-  const [secureToken, setSecureToken] = useState('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.TeachGuardSecureToken_KimTeacher2026');
+  const [secureToken, setSecureToken] = useState('');
   const [tokenStatus, setTokenStatus] = useState<'active' | 'refreshing' | 'refreshed'>('active');
 
   const [logs, setLogs] = useState<ProgressLog[]>([]);
@@ -49,8 +51,14 @@ export const CaseProgressLogger: React.FC = () => {
   const fetchSecureProgressLogs = async () => {
     setLoading(true);
     try {
-      const data = await fetchProgressLogs(secureToken);
-      setLogs(data);
+      const token = await getToken();
+      if (token) {
+        setSecureToken(token);
+        const data = await fetchProgressLogs(token);
+        setLogs(data);
+      } else {
+        setLogs(MOCK_PROGRESS_LOGS);
+      }
     } catch (err) {
       console.warn('보안 API 백엔드 호출 실패, 로컬 시뮬레이션으로 전환:', err);
       // 백엔드가 아직 실행 중이지 않거나 오류 발생 시 로컬 목업 데이터 주입 (UI 데모 보장)
@@ -115,7 +123,7 @@ export const CaseProgressLogger: React.FC = () => {
 
   useEffect(() => {
     fetchSecureProgressLogs();
-  }, [secureToken]);
+  }, [getToken]);
 
   // 정렬 모드 변경 시 로그 재배열
   const handleSortToggle = () => {
@@ -124,15 +132,16 @@ export const CaseProgressLogger: React.FC = () => {
     setLogs((prev) => sortLogs(prev, newOrder));
   };
 
-  // NEIS 토큰 갱신 애니메이션 시뮬레이션
-  const handleTokenRefresh = () => {
+  const handleTokenRefresh = async () => {
     setTokenStatus('refreshing');
-    setTimeout(() => {
-      // 새로운 가상 토큰 발급 및 활성화 상태로 전환
-      setSecureToken(`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.TeachGuardSecureToken_KimTeacher2026_${Date.now()}`);
+    try {
+      const token = await getToken();
+      if (token) setSecureToken(token);
       setTokenStatus('refreshed');
       setTimeout(() => setTokenStatus('active'), 2000);
-    }, 1200);
+    } catch (e) {
+      setTokenStatus('active');
+    }
   };
 
   const handleStepTitle = (stepNum: number) => {
