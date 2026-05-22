@@ -22,7 +22,7 @@ import { auth } from '@/lib/firebase';
 
 export default function Home() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { user, loading, getToken } = useAuth();
   
   // 메인 액티브 탭 상태 관리
   const [activePath, setActivePath] = useState('dashboard');
