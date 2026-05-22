@@ -102,8 +102,8 @@ export default function Home() {
     }, 1500);
   };
 
-  // 챗봇 대화 핸들러
-  const handleSendMessage = (e: React.FormEvent) => {
+  // 챗봇 대화 핸들러 (실제 API 연동)
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!chatInput.trim()) return;
 
@@ -112,7 +112,23 @@ export default function Home() {
     setChatInput('');
     setIsAiTyping(true);
 
-    setTimeout(() => {
+    try {
+      // 백엔드의 AI 시맨틱 검색 API 엔드포인트 호출
+      const response = await fetch('https://teachguard-backend-84878824642.asia-northeast3.run.app/api/cases/match', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer TeachGuardSecureToken_KimTeacher2026'
+        },
+        body: JSON.stringify({ query: userMessage, limit: 2 })
+      });
+
+      if (!response.ok) {
+        throw new Error('API 검색 실패');
+      }
+
+      const data = await response.json();
+      
       setChatLog((prev) => [
         ...prev,
         {
@@ -121,22 +137,23 @@ export default function Home() {
         },
         {
           role: 'cases',
-          cases: [
-            {
-              title: '학부모의 악의적 고성 및 폭언',
-              content: '학부모가 다수의 학생 및 교사가 보는 가운데 교무실에서 교사에게 고함을 지르며 모욕함.\n[결과] 교원지위법 위반으로 관할 수사기관에 고발조치 됨.',
-              similarity: 92
-            },
-            {
-              title: '반복적인 문자 협박 및 통화 폭언',
-              content: '지속적으로 교사의 개인 연락처로 늦은 밤 협박성 문자와 통화를 일삼음.\n[결과] 특별 교육 이수 및 접근 금지, 치료비 우선 보장 완료.',
-              similarity: 87
-            }
-          ]
+          cases: data.results || []
         }
       ]);
+
+    } catch (error) {
+      console.error('Case Matching Error:', error);
+      // 에러 시 폴백
+      setChatLog((prev) => [
+        ...prev,
+        {
+          role: 'ai',
+          text: '죄송합니다 선생님, 현재 AI 판례 검색 서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.'
+        }
+      ]);
+    } finally {
       setIsAiTyping(false);
-    }, 2000);
+    }
   };
 
   // 가해자 타입 한글 매핑
