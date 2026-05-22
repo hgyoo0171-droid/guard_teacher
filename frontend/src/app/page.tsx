@@ -146,7 +146,10 @@ export default function Home() {
   // ============================================
   // 1. 종합 대시보드 뷰
   // ============================================
-  const renderDashboard = () => (
+  const renderDashboard = () => {
+    const displayName = user?.displayName || user?.email?.split('@')[0] || '익명 교사';
+
+    return (
     <div className="space-y-8">
       {/* 웰컴 배너 */}
       <div className="relative overflow-hidden rounded-3xl p-8 bg-gradient-to-r from-brand-indigo via-brand-indigo/90 to-brand-azure text-white shadow-xl shadow-brand-indigo/15 animate-smooth-height">
@@ -160,7 +163,7 @@ export default function Home() {
             Teacher Care & Legal Support
           </span>
           <Typography variant="h1" className="text-white text-3xl md:text-4xl font-extrabold tracking-tight">
-            김선생 선생님, 오늘도 고생 많으셨습니다.
+            {displayName} 선생님, 오늘도 고생 많으셨습니다.
           </Typography>
           <Typography variant="lead" className="text-slate-100 text-sm md:text-base leading-relaxed">
             안심하고 교육활동에 전념하실 수 있도록 TeachGuard AI가 실시간으로 법적 대처 방안과 심리 안전가이드를 단단히 지지해 드립니다.
@@ -184,7 +187,7 @@ export default function Home() {
           <div>
             <Typography variant="detail" className="font-bold text-slate-400">기록된 침해 기록</Typography>
             <Typography variant="h2" className="mt-1 text-slate-800 font-serif">
-              {formSubmitted ? '2 건' : '1 건'}
+              {formSubmitted ? '1 건' : '0 건'}
             </Typography>
           </div>
           <Typography variant="detail" className="text-brand-indigo font-semibold">보관함에 안심 암호화 됨</Typography>
@@ -244,7 +247,8 @@ export default function Home() {
         
       </div>
     </div>
-  );
+    );
+  };
 
   // ============================================
   // 2. 침해 기록지 작성 뷰 (Zod 폼 컴포넌트 이식)
@@ -451,7 +455,10 @@ export default function Home() {
   // ============================================
   // 6. 계정 설정 뷰
   // ============================================
-  const renderSettings = () => (
+  const renderSettings = () => {
+    const displayName = user?.displayName || user?.email?.split('@')[0] || '익명 교사';
+    
+    return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="space-y-1">
         <Typography variant="h2" className="text-brand-indigo">계정 및 소속 학교 설정</Typography>
@@ -461,8 +468,8 @@ export default function Home() {
       <Card hoverable={false} className="bg-white p-8">
         <form onSubmit={(e) => { e.preventDefault(); alert('소속 정보가 성공적으로 반영되었습니다.'); }} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="교사명" defaultValue="김선생" />
-            <Input label="이메일" defaultValue="teacher@school.go.kr" readOnly />
+            <Input label="교사명" defaultValue={displayName} />
+            <Input label="이메일" defaultValue={user?.email || ''} readOnly />
           </div>
           
           
@@ -490,7 +497,8 @@ export default function Home() {
         </form>
       </Card>
     </div>
-  );
+    );
+  };
 
   if (loading) {
     return (

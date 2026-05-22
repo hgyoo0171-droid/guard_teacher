@@ -8,7 +8,15 @@ interface HeaderProps {
   activeTitle: string;
 }
 
+import { useAuth } from '@/context/AuthContext';
+
 export const Header: React.FC<HeaderProps> = ({ onMenuClick, activeTitle }) => {
+  const { user } = useAuth();
+  
+  // 이름 추출 로직 (표시 이름 또는 이메일 앞부분)
+  const displayName = user?.displayName || user?.email?.split('@')[0] || '익명 교사';
+  const initial = displayName.charAt(0).toUpperCase();
+
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between w-full h-20 px-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800">
       
@@ -41,11 +49,11 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick, activeTitle }) => {
         {/* 선생님 간략 프로필 */}
         <div className="flex items-center gap-3">
           <div className="flex flex-col text-right hidden sm:flex">
-            <span className="text-sm font-bold text-slate-800 dark:text-slate-100">김선생 선생님</span>
+            <span className="text-sm font-bold text-slate-800 dark:text-slate-100">{displayName} 선생님</span>
             <span className="text-xs text-slate-400">초등 담임 교사</span>
           </div>
           <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-indigo to-brand-azure text-white font-black text-sm shadow-md">
-            김
+            {initial}
           </div>
         </div>
 
