@@ -143,40 +143,4 @@ export async function deleteProgressLog(id: string, token: string): Promise<void
 // ──────────────────────────────────────────────────
 // 오프라인 폴백 목업 데이터 (백엔드 미연결 시 사용)
 // ──────────────────────────────────────────────────
-export const MOCK_PROGRESS_LOGS: ProgressLog[] = [
-  {
-    id: 'mock-1',
-    step: 1,
-    stepTitle: '📥 교권 침해 공식 접수',
-    logDate: '2026-05-10',
-    location: '서울한국초등학교 교무실',
-    content:
-      '학교 교장 및 관리자에게 서면 교권 침해 피해서 제출 및 접수 완료. 교권 침해 사안조사 대응 준비. 접수번호 발급.',
-    requiredDocuments: '교권 침해 피해 신고서 1부, 피해 경위 진술서',
-    remarks: '접수증 원본 별도 보관 필수',
-    createdAt: '2026-05-10T09:00:00Z',
-  },
-  {
-    id: 'mock-2',
-    step: 2,
-    stepTitle: '🔍 교육청 이관 및 예비 조사',
-    logDate: '2026-05-13',
-    location: '서울특별시 성동광진교육지원청',
-    content:
-      '교육청 교권 보좌관 배정 완료 및 사건 사실관계 예비 조사 시작 고지. 목격 동료 교사 진술 확보 진행 중.',
-    requiredDocuments: '목격 동료 교사 2인 인적사항 및 동의 확약서, 녹음 속기록',
-    createdAt: '2026-05-13T14:30:00Z',
-  },
-  {
-    id: 'mock-3',
-    step: 3,
-    stepTitle: '📁 소명자료 및 추가 제출',
-    logDate: '2026-05-16',
-    location: '서울특별시 성동광진교육지원청',
-    content:
-      '소명서, 목격 교사 확인서 2부, 심리 치료 진단서를 추가 제출하였음. 교보위 심의 일정 조율 요청.',
-    requiredDocuments: '소명서 1부, 목격 확인서 2부, 심리치료 진단서 1부',
-    remarks: '교보위 위원장에게 서면 심의 요청 별도 발송',
-    createdAt: '2026-05-16T10:00:00Z',
-  },
-];
+export const MOCK_PROGRESS_LOGS: ProgressLog[] = [];

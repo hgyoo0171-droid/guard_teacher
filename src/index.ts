@@ -67,30 +67,7 @@ const authenticateJWT = (req: AuthenticatedRequest, res: express.Response, next:
 };
 
 // 모의 DB 데이터 저장소 (서버 메모리 기반 작동)
-let mockProgressLogs = [
-  {
-    id: '1',
-    user_id: 'user-uuid-1234',
-    step: 1,
-    stepTitle: '📥 교권 침해 공식 접수',
-    logDate: '2026-05-10',
-    location: '서울한국초등학교 교무실',
-    content: '학교 교장 및 관리자에게 서면 교권 침해 피해서 제출 및 접수 완료.',
-    requiredDocuments: '교권 침해 피해 신고서 1부, 증거 USB 보관 완료',
-    remarks: '교장실 면담 시 차분하게 대응할 것'
-  },
-  {
-    id: '2',
-    user_id: 'user-uuid-1234',
-    step: 2,
-    stepTitle: '🔍 교육청 이관 및 예비 조사',
-    logDate: '2026-05-13',
-    location: '서울특별시 성동광진교육지원청',
-    content: '교육청 교권 보좌관 배정 완료 및 사건 사실관계 예비 조사 시작 고지.',
-    requiredDocuments: '목격 동료 교사 2인 인적사항 및 동의 확약서',
-    remarks: '교육청 조사 시 객관적 증거 위주로 진술할 것'
-  }
-];
+let mockProgressLogs: any[] = [];
 
 // 1. 교권 침해 상황 맞춤형 대응 가이드 생성 Flow 정의
 export const teachGuardGuideFlow = defineFlow(
