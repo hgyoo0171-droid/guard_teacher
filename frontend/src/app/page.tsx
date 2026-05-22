@@ -173,15 +173,13 @@ export default function Home() {
 
       {/* 통계 요약 영역 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card hoverable className="flex flex-col justify-between p-6 h-36 bg-white border-l-4 border-l-brand-indigo animate-smooth-height">
-          <div>
+        <div className="bg-white p-6 rounded-3xl border border-brand-indigo/20 shadow-sm flex flex-col justify-between">
             <Typography variant="detail" className="font-bold text-slate-400">나의 안심 교권 지수</Typography>
-            <Typography variant="h2" className="mt-1 text-slate-800 font-serif">98%</Typography>
-          </div>
-          <Typography variant="detail" className="text-emerald-500 font-semibold flex items-center gap-1">
-            ▲ 정상 보호 상태
-          </Typography>
-        </Card>
+            <Typography variant="h1" className="text-slate-800 font-extrabold mt-2 tracking-tighter">100%</Typography>
+            <Typography variant="detail" className="text-slate-400 mt-2 flex items-center gap-1">
+              <span className="text-emerald-500">▲</span> 완벽한 보호 상태
+            </Typography>
+        </div>
         
         <Card hoverable className="flex flex-col justify-between p-6 h-36 bg-white border-l-4 border-l-brand-azure animate-smooth-height">
           <div>
@@ -193,13 +191,12 @@ export default function Home() {
           <Typography variant="detail" className="text-brand-indigo font-semibold">보관함에 안심 암호화 됨</Typography>
         </Card>
 
-        <Card hoverable className="flex flex-col justify-between p-6 h-36 bg-white border-l-4 border-l-emerald-500 animate-smooth-height">
-          <div>
+        <div className="bg-white p-6 rounded-3xl border border-emerald-500/20 shadow-sm flex flex-col justify-between relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-2 h-full bg-emerald-500" />
             <Typography variant="detail" className="font-bold text-slate-400">AI 판례 RAG 검색 매칭</Typography>
-            <Typography variant="h2" className="mt-1 text-slate-800 font-serif">16 건</Typography>
-          </div>
-          <Typography variant="detail" className="text-slate-500">이번 주 교원지위법 갱신 완료</Typography>
-        </Card>
+            <Typography variant="h1" className="text-slate-800 font-extrabold mt-2 tracking-tighter">0 건</Typography>
+            <Typography variant="detail" className="text-slate-400 mt-2">유사 판례 검색을 시작해보세요</Typography>
+        </div>
       </div>
 
       {/* 예방 수칙 및 안내 F-패턴 */}

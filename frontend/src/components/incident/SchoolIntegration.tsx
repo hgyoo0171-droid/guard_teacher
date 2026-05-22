@@ -5,21 +5,29 @@ import { Card } from '../ui/Card';
 import { Typography } from '../ui/Typography';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
+import { useAuth } from '@/context/AuthContext';
 
 export const SchoolIntegration: React.FC = () => {
+  const { getToken } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [schools, setSchools] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [savedSchool, setSavedSchool] = useState<any>(null);
 
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleSearch = async (e: React.MouseEvent | React.KeyboardEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
+
+    const token = await getToken();
+    if (!token) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
 
     setIsSearching(true);
     try {
       const response = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/school-info?schoolName=${encodeURIComponent(searchQuery)}`, {
-        headers: { 'Authorization': 'Bearer TeachGuardSecureToken_KimTeacher2026' }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
       setSchools(data.schools || []);
@@ -56,17 +64,23 @@ export const SchoolIntegration: React.FC = () => {
         </div>
       ) : (
         <div className="space-y-4">
-          <form onSubmit={handleSearch} className="flex gap-2">
+          <div className="flex gap-2">
             <Input 
               placeholder="학교명을 입력하세요 (예: 서울초)" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleSearch(e);
+                }
+              }}
               className="flex-1 rounded-xl"
             />
-            <Button type="submit" variant="primary" disabled={isSearching} className="rounded-xl">
+            <Button type="button" onClick={handleSearch} variant="primary" disabled={isSearching} className="rounded-xl">
               검색
             </Button>
-          </form>
+          </div>
 
           {schools.length > 0 && (
             <div className="space-y-2 mt-4 max-h-60 overflow-y-auto">
