@@ -503,7 +503,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input 
               label="담당 직급" 
-              placeholder="예: 5학년 2반 담임" 
+              placeholder="예: 1학년 2반 담임, 수학 교과 전담 등" 
               value={teacherPosition}
               onChange={(e) => setTeacherPosition(e.target.value)}
             />

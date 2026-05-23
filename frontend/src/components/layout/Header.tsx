@@ -50,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick, activeTitle }) => {
         <div className="flex items-center gap-3">
           <div className="flex flex-col text-right hidden sm:flex">
             <span className="text-sm font-bold text-slate-800 dark:text-slate-100">{displayName} 선생님</span>
-            <span className="text-xs text-slate-400">초등 담임 교사</span>
+            <span className="text-xs text-slate-400">대한민국 교원</span>
           </div>
           <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-indigo to-brand-azure text-white font-black text-sm shadow-md">
             {initial}
