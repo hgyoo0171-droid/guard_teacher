@@ -34,9 +34,26 @@ export const SchoolIntegration: React.FC<SchoolIntegrationProps> = ({ onSchoolSe
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
-      setSchools(data.schools || []);
-    } catch (err) {
+      
+      if (!response.ok) {
+        throw new Error(data.message || '학교 검색에 실패했습니다.');
+      }
+      
+      // 백엔드가 배열을 반환하는지, { schools: [] } 형태인지 방어적으로 처리
+      const schoolList = Array.isArray(data) ? data : (data.schools || []);
+      
+      // 학교명(schoolName)과 주소(address), 교육청(officeOfEducation) 포맷 보정
+      const formattedSchools = schoolList.map((s: any) => ({
+        id: s.id || s.schoolName,
+        name: s.name || s.schoolName,
+        address: s.address || s.schoolAddress || '',
+        office: s.office || s.officeOfEducation || ''
+      }));
+      
+      setSchools(formattedSchools);
+    } catch (err: any) {
       console.error(err);
+      alert(err.message || '검색 중 오류가 발생했습니다.');
     } finally {
       setIsSearching(false);
     }

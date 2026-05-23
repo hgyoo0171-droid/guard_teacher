@@ -567,11 +567,6 @@ export default function Home() {
         return (
           <div className="space-y-12">
             {renderAiConsultation()}
-            <hr className="border-slate-200 dark:border-slate-800" />
-            <div className="space-y-4">
-              <Typography variant="h2" className="text-brand-indigo px-4">AI 자동 판례 매칭 결과</Typography>
-              <CaseMatcher />
-            </div>
           </div>
         );
       case 'settings':
