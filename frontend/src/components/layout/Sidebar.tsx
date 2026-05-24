@@ -2,6 +2,9 @@
 
 import React from 'react';
 import { Typography } from '../ui/Typography';
+import { useRouter } from 'next/navigation';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -17,6 +20,16 @@ interface NavItem {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activePath, setActivePath }) => {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.push('/login');
+    } catch (e) {
+      console.error(e);
+    }
+  };
   
   const navItems: NavItem[] = [
     {
@@ -130,6 +143,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activePath,
             </svg>
             교육청 단일 회선 1396
           </a>
+        </div>
+
+        {/* 로그아웃 버튼 */}
+        <div className="px-6 pb-6">
+          <button 
+            onClick={handleLogout}
+            className="flex items-center gap-2 text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 font-medium transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            로그아웃
+          </button>
         </div>
 
       </aside>

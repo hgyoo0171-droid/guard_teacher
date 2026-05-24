@@ -42,8 +42,6 @@ export default function Home() {
   ]);
   const [isAiTyping, setIsAiTyping] = useState(false);
 
-  // 설정 화면 관리용 상태 추가
-  const [teacherPosition, setTeacherPosition] = useState('');
 
 
 
@@ -437,52 +435,7 @@ export default function Home() {
     </div>
   );
 
-  // ============================================
-  // 6. 계정 설정 뷰
-  // ============================================
-  const renderSettings = () => {
-    const displayName = user?.displayName || user?.email?.split('@')[0] || '익명 교사';
-    
-    return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div className="space-y-1 text-center mb-8">
-        <Typography variant="h1" className="text-brand-indigo font-extrabold text-3xl">계정 및 소속 학교 설정</Typography>
-        <Typography variant="p" className="text-slate-500 text-lg">교권 보호 서비스 연계를 위한 기본 정보를 수정합니다.</Typography>
-      </div>
 
-      <Card hoverable={false} className="bg-white p-8">
-        <form onSubmit={(e) => { e.preventDefault(); alert('소속 정보가 성공적으로 반영되었습니다.'); }} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="교사명" defaultValue={displayName} />
-            <Input label="이메일" defaultValue={user?.email || ''} readOnly />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input 
-              label="담당 직급" 
-              placeholder="예: 1학년 2반 담임, 수학 교과 전담 등" 
-              value={teacherPosition}
-              onChange={(e) => setTeacherPosition(e.target.value)}
-            />
-          </div>
-
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-            <Button 
-              type="button" 
-              variant="outline"
-              onClick={async () => {
-                await signOut(auth);
-                router.push('/login');
-              }}
-            >
-              로그아웃
-            </Button>
-            <Button type="submit" variant="primary">설정 저장</Button>
-          </div>
-        </form>
-      </Card>
-    </div>
-    );
-  };
 
   if (loading) {
     return (
@@ -522,8 +475,6 @@ export default function Home() {
       case 'settings':
         return (
           <div className="space-y-12">
-            {renderSettings()}
-            <hr className="border-slate-200 dark:border-slate-800" />
             {renderGuidelines()}
             <hr className="border-slate-200 dark:border-slate-800" />
             <EmergencyContacts />
