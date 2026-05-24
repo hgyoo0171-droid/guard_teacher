@@ -61,7 +61,24 @@ export const getEmergencyContactsFlow = defineFlow(
           description: `입력하신 주소(${loc})에서 가장 가까운 관할 지구대입니다. 긴급출동 및 보호 요청 가능.`
         });
       }
-      fallback.push(...FALLBACK_CENTERS);
+      const requestedRegion = input.region || '전국';
+      const relevantFallbacks = FALLBACK_CENTERS.filter(c => 
+        c.region === requestedRegion || c.region === '전국'
+      );
+      
+      const hasRegionalHealingCenter = relevantFallbacks.some(c => c.region === requestedRegion && c.category.includes('치유'));
+      if (requestedRegion !== '전국' && !hasRegionalHealingCenter) {
+        fallback.push({
+          id: `mock-healing-${Date.now()}`,
+          region: requestedRegion,
+          category: '교원치유센터',
+          name: `${requestedRegion}교육청 교원치유지원센터`,
+          phone: '1395',
+          description: '심리상담 및 법률 자문, 교권보호위원회 절차 지원'
+        });
+      }
+
+      fallback.push(...relevantFallbacks);
       return fallback;
     };
 
