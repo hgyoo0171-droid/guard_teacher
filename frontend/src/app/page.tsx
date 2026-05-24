@@ -6,7 +6,6 @@ import { IncidentForm, IncidentFormValues } from '@/components/incident/Incident
 import { CaseProgressLogger } from '@/components/incident/CaseProgressLogger';
 import { CaseMatcher } from '@/components/incident/CaseMatcher';
 import { EmergencyContacts } from '@/components/incident/EmergencyContacts';
-import { SchoolIntegration } from '@/components/incident/SchoolIntegration';
 import { TrendAnalysisReport } from '@/components/incident/TrendAnalysisReport';
 import { Typography } from '../components/ui/Typography';
 import { Button } from '../components/ui/Button';
@@ -45,46 +44,8 @@ export default function Home() {
 
   // 설정 화면 관리용 상태 추가
   const [teacherPosition, setTeacherPosition] = useState('');
-  const [mySchool, setMySchool] = useState<any>(null);
 
-  // 4. 학교 검색 및 사용자 지역 상태 (공공데이터 연동)
-  const [userRegion, setUserRegion] = useState('전체');
-  const [schoolSearchInput, setSchoolSearchInput] = useState('');
-  const [searchingSchool, setSearchingSchool] = useState(false);
-  const [schoolInfo, setSchoolInfo] = useState({ office: '서울특별시 교육청', name: '서울한국초등학교' });
 
-  const handleSchoolSearch = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (!schoolSearchInput) return;
-    
-    const token = await getToken();
-    if (!token) return alert('로그인이 필요합니다.');
-
-    setSearchingSchool(true);
-    try {
-      const response = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/school-info?schoolName=${encodeURIComponent(schoolSearchInput)}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        if (data && data.length > 0) {
-          const firstHit = data[0];
-          setSchoolInfo({ office: firstHit.officeOfEducation, name: firstHit.schoolName });
-          // 시도 이름 추출 (예: '서울특별시교육청' -> '서울')
-          const regionPrefix = firstHit.officeOfEducation.substring(0, 2);
-          setUserRegion(regionPrefix);
-          alert(`${firstHit.schoolName} 정보를 나이스(NEIS)에서 성공적으로 가져왔습니다!`);
-        } else {
-          alert('나이스(NEIS) 서버에서 일치하는 학교를 찾을 수 없습니다.');
-        }
-      }
-    } catch (error) {
-      console.error('School search error', error);
-      alert('학교 검색 중 오류가 발생했습니다.');
-    } finally {
-      setSearchingSchool(false);
-    }
-  };
 
   // 기록 제출 성공 핸들러
   const handleFormSuccess = (data: IncidentFormValues) => {
@@ -495,23 +456,12 @@ export default function Home() {
             <Input label="교사명" defaultValue={displayName} />
             <Input label="이메일" defaultValue={user?.email || ''} readOnly />
           </div>
-          
-          
-          <SchoolIntegration onSchoolSelect={setMySchool} />
-
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input 
               label="담당 직급" 
               placeholder="예: 1학년 2반 담임, 수학 교과 전담 등" 
               value={teacherPosition}
               onChange={(e) => setTeacherPosition(e.target.value)}
-            />
-            <Input 
-              label="인증 상태" 
-              value={mySchool ? "NEIS 소속 연동 완료" : "미인증"} 
-              readOnly 
-              className={mySchool ? "text-emerald-600 font-bold" : "text-slate-400"} 
             />
           </div>
 
