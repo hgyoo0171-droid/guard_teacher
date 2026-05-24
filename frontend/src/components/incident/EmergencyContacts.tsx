@@ -54,7 +54,7 @@ export const EmergencyContacts: React.FC = () => {
         throw new Error(data.message || '긴급 지원망 정보를 가져오는데 실패했습니다.');
       }
       
-      setContacts(data.results || []);
+      setContacts(Array.isArray(data) ? data : (data.results || []));
     } catch (err: any) {
       console.error(err);
       setErrorMsg(err.message || '오류가 발생했습니다.');
