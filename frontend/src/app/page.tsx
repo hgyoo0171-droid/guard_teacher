@@ -393,7 +393,7 @@ export default function Home() {
   // 5. 공공 법령 뷰어 뷰
   // ============================================
   const renderGuidelines = () => (
-    <div className="max-w-3xl mx-auto space-y-6 font-sans">
+    <div className="max-w-3xl mx-auto space-y-6 font-sans pt-8">
       <div className="space-y-1 text-center mb-8">
         <Typography variant="h1" className="text-brand-indigo font-extrabold text-3xl">공공 가이드라인 및 법령 뷰어</Typography>
         <Typography variant="p" className="text-slate-500 text-lg">대한민국 교원의 지위와 권익을 수호하는 핵심 법령 자료실입니다.</Typography>

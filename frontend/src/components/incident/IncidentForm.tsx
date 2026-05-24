@@ -36,7 +36,7 @@ interface IncidentFormProps {
 }
 
 export const IncidentForm: React.FC<IncidentFormProps> = ({ onSuccess }) => {
-  const { user } = useAuth();
+  const { user, getToken } = useAuth();
   const displayName = user?.displayName || user?.email?.split('@')[0] || '익명 교사';
 
   const {
@@ -79,36 +79,36 @@ export const IncidentForm: React.FC<IncidentFormProps> = ({ onSuccess }) => {
     { label: '🔍 기타 교권 침해', value: '기타' }
   ];
 
-  // Genkit 백엔드로 전송하는 API 연동 스켈레톤 로직
+  // 백엔드로 전송하는 API 연동 로직
   const sendToGenkitBackend = async (data: IncidentFormValues) => {
-    try {
-      const response = await fetch('/api/incident', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...data,
-          submittedAt: new Date().toISOString(),
-        }),
-      });
+    const token = await getToken();
+    const response = await fetch('https://teachguard-backend-84878824642.asia-northeast3.run.app/api/incidents', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        ...data,
+        submittedAt: new Date().toISOString(),
+      }),
+    });
 
-      if (!response.ok) {
-        throw new Error('백엔드 전송에 실패했습니다.');
-      }
-      
-      return await response.json();
-    } catch (err) {
-      console.warn('백엔드 스켈레톤 통신 연계 시뮬레이션:', err);
-      // 로컬 데모에서는 성공한 것으로 가정하여 진행
-      return { success: true, message: 'Simulated Genkit connection success' };
+    if (!response.ok) {
+      throw new Error('백엔드 전송에 실패했습니다.');
     }
+    
+    return await response.json();
   };
 
   const onSubmit = async (data: IncidentFormValues) => {
-    // Genkit 백엔드 연동 호출 스켈레톤 실행
-    await sendToGenkitBackend(data);
-    onSuccess(data);
+    try {
+      await sendToGenkitBackend(data);
+      onSuccess(data);
+    } catch (err) {
+      console.error('사건 기록 저장 실패:', err);
+      alert('저장에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    }
   };
 
   return (

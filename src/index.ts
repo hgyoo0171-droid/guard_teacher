@@ -237,8 +237,33 @@ app.delete('/api/progress-logs/:id', authenticateJWT as any, (req: Authenticated
 });
 
 // ==========================================
+// 사건 수첩 (Incidents) 기능
+// ==========================================
+
+// 사건 기록 생성 API
+app.post('/api/incidents', authenticateJWT as any, (req: AuthenticatedRequest, res) => {
+  try {
+    const newIncident = {
+      id: `incident-${Date.now()}`,
+      user_id: req.user!.id,
+      ...req.body,
+      created_at: new Date().toISOString(),
+    };
+    mockIncidents.push(newIncident);
+    console.log(`[API] 유저 ${req.user?.name}의 사건 기록 성공적으로 생성. ID: ${newIncident.id}`);
+    res.status(201).json(newIncident);
+  } catch (error: any) {
+    console.error('Error creating incident:', error);
+    res.status(500).json({ error: '사건 기록 저장 중 오류가 발생했습니다.' });
+  }
+});
+
+// ==========================================
 // 익명 커뮤니티 (Anonymous Peer Support Network) 기능
 // ==========================================
+
+// 사건 수첩 임시 저장소 (Mock DB)
+let mockIncidents: any[] = [];
 
 // 모의 DB 데이터 저장소
 let mockAnonymousPosts: any[] = [
