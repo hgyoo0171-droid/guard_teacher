@@ -43,29 +43,29 @@ export const getEmergencyContactsFlow = defineFlow(
     })),
   },
   async (input) => {
-    try {
-      // 동적 폴백 데이터 생성 (사용자 주소 기반 가장 가까운 관할 지구대)
-      const generateDynamicFallback = () => {
-        const fallback = [];
-        const loc = input.fullAddress || input.region;
-        if (loc) {
-          const dongMatch = loc.match(/([가-힣]+(동|읍|면|구|군))/);
-          const district = dongMatch ? dongMatch[1] : (input.region || '관할');
-          
-          fallback.push({
-            id: `mock-police-${Date.now()}`,
-            region: input.region || '전국',
-            category: '경찰서',
-            name: `${district} 관할 지구대`,
-            phone: '112',
-            address: `${loc} 인근 경찰서/지구대`,
-            description: `입력하신 주소(${loc})에서 가장 가까운 관할 지구대입니다. 긴급출동 및 보호 요청 가능.`
-          });
-        }
-        fallback.push(...FALLBACK_CENTERS);
-        return fallback;
-      };
+    // 동적 폴백 데이터 생성 (사용자 주소 기반 가장 가까운 관할 지구대)
+    const generateDynamicFallback = () => {
+      const fallback = [];
+      const loc = input.fullAddress || input.region;
+      if (loc) {
+        const dongMatch = loc.match(/([가-힣]+(동|읍|면|구|군))/);
+        const district = dongMatch ? dongMatch[1] : (input.region || '관할');
+        
+        fallback.push({
+          id: `mock-police-${Date.now()}`,
+          region: input.region || '전국',
+          category: '경찰서',
+          name: `${district} 관할 지구대`,
+          phone: '112',
+          address: `${loc} 인근 경찰서/지구대`,
+          description: `입력하신 주소(${loc})에서 가장 가까운 관할 지구대입니다. 긴급출동 및 보호 요청 가능.`
+        });
+      }
+      fallback.push(...FALLBACK_CENTERS);
+      return fallback;
+    };
 
+    try {
       // 환경 변수에서 API 키 로드
       const apiKey = process.env.DATA_GO_KR_API_KEY;
       if (!apiKey) {
