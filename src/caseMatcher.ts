@@ -92,16 +92,18 @@ export const semanticSearchFlow = defineFlow(
 ${JSON.stringify(curatedCases, null, 2)}
 
 위 상황을 읽고, 선생님의 상황과 가장 유사하거나 법리적으로 적용될 수 있는 판례를 최대 ${input.limit}개만 선택해주세요.
-그리고 각 판례에 대해 다음 두 가지를 작성해주세요.
+그리고 각 판례에 대해 다음 세 가지를 작성해주세요.
 1. 사건 요약 (caseSummary): 이 판례가 대체 어떤 사건이었는지 일반인이 이해하기 쉽게 1~2문장으로 요약해주세요.
-2. 맞춤형 법률 해석 (interpretation): 이 판례의 법리적 기준(성립 요건, 처벌 가능성 등)이 선생님의 상황에 어떻게 적용될 수 있는지 선생님이 이해하기 쉽게 3~4문장으로 해석해주세요. 어거지로 끼워맞추지 말고, 실제로 어떻게 법적으로 대응할 수 있을지 현실적인 조언을 해주세요.
+2. 맞춤형 법률 해석 (interpretation): 이 판례의 법리적 기준(성립 요건, 처벌 가능성 등)이 선생님의 상황에 어떻게 적용될 수 있는지 선생님이 이해하기 쉽게 3~4문장으로 해석해주세요.
+3. 구체적 대처 방안 (actionPlan): 이 판례와 해석을 바탕으로 선생님이 당장 취해야 할 구체적이고 실질적인 대처 가이드를 2~3문장으로 제시해주세요. (예: "먼저 통화 녹음 등 증거를 확보하시고, 학교장에게 즉시 보고하세요.")
 
 반드시 아래와 같은 JSON 배열 형식으로만 응답하세요. (마크다운 백틱 없이 순수 JSON만 반환)
 [
   { 
     "id": "선택한 판례의 id", 
     "caseSummary": "사건의 쉬운 요약...", 
-    "interpretation": "AI의 친절하고 현실적인 법률 해석..." 
+    "interpretation": "AI의 친절하고 현실적인 법률 해석...",
+    "actionPlan": "선생님을 위한 구체적인 행동 지침..."
   }
 ]
 `;
@@ -131,7 +133,7 @@ ${JSON.stringify(curatedCases, null, 2)}
         return {
           id: rawCase.id,
           title: rawCase.title,
-          content: `${rawCase.info}\n\n[📋 쉬운 사건 요약]\n${analysis.caseSummary}\n\n[💡 AI 맞춤형 법률 해석]\n${analysis.interpretation}\n\n[⚖️ 실제 판결 요지 원문]\n${rawCase.summary}`,
+          content: `${rawCase.info}\n\n[📋 쉬운 사건 요약]\n${analysis.caseSummary}\n\n[💡 AI 맞춤형 법률 해석]\n${analysis.interpretation}\n\n[🛡️ 선생님을 위한 구체적 대처 방안]\n${analysis.actionPlan || '전문가의 도움을 받아 대응 방안을 마련하시기 바랍니다.'}\n\n[⚖️ 실제 판결 요지 원문]\n${rawCase.summary}`,
           similarity: 0.99 - (index * 0.03) 
         };
       }).filter(Boolean);
