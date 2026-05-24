@@ -25,8 +25,26 @@ export const EmergencyContacts: React.FC = () => {
       const token = await getToken();
       if (!token) throw new Error('로그인이 필요합니다.');
 
-      const region = address.split(' ').slice(0, 2).join(' '); // 시/구 추출
-      const response = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/emergency-contacts?region=${encodeURIComponent(region)}&category=police&searchQuery=${encodeURIComponent(address)}`, {
+      let searchRegion = address;
+      
+      // 학교 이름으로 입력한 경우 (예: 해밀중학교) -> NEIS API를 통해 주소 자동 변환 시도
+      if (address.endsWith('학교') && !address.includes(' ')) {
+        try {
+          const schoolRes = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/school-info?schoolName=${encodeURIComponent(address)}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const schoolData = await schoolRes.json();
+          if (schoolRes.ok && Array.isArray(schoolData) && schoolData.length > 0 && schoolData[0].address) {
+            // 도로명 주소 가져오기 (예: 세종특별자치시 해밀2로 6)
+            searchRegion = schoolData[0].address;
+          }
+        } catch (e) {
+          console.error('학교 주소 자동 변환 실패', e);
+        }
+      }
+
+      const region = searchRegion.split(' ').slice(0, 2).join(' '); // 시/구 추출
+      const response = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/emergency-contacts?region=${encodeURIComponent(region)}&category=police&searchQuery=${encodeURIComponent(searchRegion)}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -58,7 +76,7 @@ export const EmergencyContacts: React.FC = () => {
 
       <form onSubmit={handleSearch} className="flex gap-2">
         <Input 
-          placeholder="학교 주소 입력 (예: 서울 강남구 테헤란로)" 
+          placeholder="도로명 주소 또는 학교 이름 입력 (예: 서울 강남구, 해밀중학교)" 
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           className="flex-1 rounded-xl border-red-200 focus:ring-red-500"
