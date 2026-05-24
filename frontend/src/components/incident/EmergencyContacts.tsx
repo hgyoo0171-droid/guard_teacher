@@ -44,7 +44,7 @@ export const EmergencyContacts: React.FC = () => {
       }
 
       const region = searchRegion.split(' ').slice(0, 2).join(' '); // 시/구 추출
-      const response = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/emergency-contacts?region=${encodeURIComponent(region)}&category=police&searchQuery=${encodeURIComponent(searchRegion)}`, {
+      const response = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/emergency-contacts?region=${encodeURIComponent(region)}&category=police`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -81,7 +81,7 @@ export const EmergencyContacts: React.FC = () => {
           onChange={(e) => setAddress(e.target.value)}
           className="flex-1 rounded-xl border-red-200 focus:ring-red-500"
         />
-        <Button type="submit" className="rounded-xl bg-red-600 hover:bg-red-700 text-white" disabled={isSearching}>
+        <Button type="submit" className="rounded-xl bg-red-600 hover:bg-red-700 text-white whitespace-nowrap shrink-0" disabled={isSearching}>
           위치 조회
         </Button>
       </form>
