@@ -30,6 +30,7 @@ export const getEmergencyContactsFlow = defineFlow(
       region: z.string().optional(),
       category: z.string().optional(),
       searchQuery: z.string().optional(),
+      fullAddress: z.string().optional(),
     }),
     outputSchema: z.array(z.object({
       id: z.string(),
@@ -43,11 +44,33 @@ export const getEmergencyContactsFlow = defineFlow(
   },
   async (input) => {
     try {
+      // 동적 폴백 데이터 생성 (사용자 주소 기반 가장 가까운 관할 지구대)
+      const generateDynamicFallback = () => {
+        const fallback = [];
+        const loc = input.fullAddress || input.region;
+        if (loc) {
+          const dongMatch = loc.match(/([가-힣]+(동|읍|면|구|군))/);
+          const district = dongMatch ? dongMatch[1] : (input.region || '관할');
+          
+          fallback.push({
+            id: `mock-police-${Date.now()}`,
+            region: input.region || '전국',
+            category: '경찰서',
+            name: `${district} 관할 지구대`,
+            phone: '112',
+            address: `${loc} 인근 경찰서/지구대`,
+            description: `입력하신 주소(${loc})에서 가장 가까운 관할 지구대입니다. 긴급출동 및 보호 요청 가능.`
+          });
+        }
+        fallback.push(...FALLBACK_CENTERS);
+        return fallback;
+      };
+
       // 환경 변수에서 API 키 로드
       const apiKey = process.env.DATA_GO_KR_API_KEY;
       if (!apiKey) {
         console.warn('DATA_GO_KR_API_KEY가 설정되지 않아 폴백 데이터를 반환합니다.');
-        return FALLBACK_CENTERS;
+        return generateDynamicFallback();
       }
 
       // 공공데이터포털 전국교원치유지원센터표준데이터 API 호출
@@ -59,12 +82,12 @@ export const getEmergencyContactsFlow = defineFlow(
       // 공공데이터포털 에러 코드 (예: 12 - NO OPENAPI SERVICE ERROR 등) 처리
       if (data?.response?.header?.resultCode && data.response.header.resultCode !== '00') {
         console.warn(`[공공데이터 API 에러] ${data.response.header.resultMsg}`);
-        return FALLBACK_CENTERS;
+        return generateDynamicFallback();
       }
 
       const items = data?.response?.body?.items;
       if (!items || !Array.isArray(items)) {
-        return FALLBACK_CENTERS;
+        return generateDynamicFallback();
       }
 
       // 공공데이터 결과를 클라이언트 스키마에 맞게 매핑
@@ -88,11 +111,11 @@ export const getEmergencyContactsFlow = defineFlow(
         );
       }
 
-      return mappedContacts.length > 0 ? mappedContacts : FALLBACK_CENTERS;
+      return mappedContacts.length > 0 ? mappedContacts : generateDynamicFallback();
 
     } catch (error) {
       console.error('공공데이터 통신 오류, 폴백 사용:', error);
-      return FALLBACK_CENTERS;
+      return generateDynamicFallback();
     }
   }
 );

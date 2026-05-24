@@ -44,7 +44,7 @@ export const EmergencyContacts: React.FC = () => {
       }
 
       const region = searchRegion.split(' ').filter(Boolean)[0]; // 시/도만 정확히 추출 (예: 세종특별자치시)
-      const response = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/emergency-contacts?region=${encodeURIComponent(region)}&category=police`, {
+      const response = await fetch(`https://teachguard-backend-84878824642.asia-northeast3.run.app/api/emergency-contacts?region=${encodeURIComponent(region)}&fullAddress=${encodeURIComponent(searchRegion)}&category=police`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       

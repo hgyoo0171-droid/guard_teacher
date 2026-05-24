@@ -488,8 +488,9 @@ app.get('/api/emergency-contacts', authenticateJWT as any, async (req: Authentic
     const region = req.query.region as string;
     const category = req.query.category as string;
     const searchQuery = req.query.searchQuery as string;
+    const fullAddress = req.query.fullAddress as string;
     
-    const result = await runFlow(getEmergencyContactsFlow, { region, category, searchQuery });
+    const result = await runFlow(getEmergencyContactsFlow, { region, category, searchQuery, fullAddress });
     res.json(result);
   } catch (error: any) {
     console.error('Error fetching emergency contacts:', error);
