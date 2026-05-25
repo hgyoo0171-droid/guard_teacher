@@ -38,7 +38,7 @@ export default function Home() {
   // 3. AI 상담 모의 채팅 로그
   const [chatInput, setChatInput] = useState('');
   const [chatLog, setChatLog] = useState<any[]>([
-    { role: 'ai', text: '안녕하세요! 선생님, 어떤 교권 침해 상황을 겪으셨나요? 상황을 말씀해 주시면 위로와 함께 유사 판례를 찾아드립니다.' }
+    { role: 'ai', text: '안녕하세요! 선생님, 어떤 교권 침해 상황을 겪으셨나요? 상황을 말씀해 주시면 관련 판례와 대응 방안을 안내해 드립니다.' }
   ]);
   const [isAiTyping, setIsAiTyping] = useState(false);
 
