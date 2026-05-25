@@ -26,6 +26,9 @@ export default function Home() {
   // 메인 액티브 탭 상태 관리
   const [activePath, setActivePath] = useState('dashboard');
   
+  // 사건 수첩 서브 탭 상태 관리
+  const [incidentSubTab, setIncidentSubTab] = useState<'form' | 'progress'>('form');
+  
   // 폼 테스트 관련 상태
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [submittedData, setSubmittedData] = useState<IncidentFormValues | null>(null);
@@ -457,13 +460,46 @@ export default function Home() {
         return renderDashboard();
       case 'incident-log':
         return (
-          <div className="space-y-12 max-w-4xl mx-auto">
-            {renderIncidentInput()}
-            <hr className="border-slate-200 dark:border-slate-800" />
-            <div className="space-y-4">
-              <Typography variant="h2" className="text-brand-indigo px-4 font-bold text-2xl">사건 진행 상황 추적</Typography>
-              <CaseProgressLogger />
+          <div className="space-y-8 max-w-4xl mx-auto animate-in fade-in duration-300">
+            {/* 서브 탭 네비게이션 */}
+            <div className="flex justify-center mb-6">
+              <div className="inline-flex bg-slate-100 dark:bg-slate-800 rounded-2xl p-1.5 shadow-inner">
+                <button
+                  onClick={() => setIncidentSubTab('form')}
+                  className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 ${
+                    incidentSubTab === 'form'
+                      ? 'bg-white dark:bg-slate-700 text-brand-indigo shadow-sm'
+                      : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                  }`}
+                >
+                  📝 새 사건 기록하기
+                </button>
+                <button
+                  onClick={() => setIncidentSubTab('progress')}
+                  className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 ${
+                    incidentSubTab === 'progress'
+                      ? 'bg-white dark:bg-slate-700 text-brand-indigo shadow-sm'
+                      : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                  }`}
+                >
+                  📊 사건 진행 현황
+                </button>
+              </div>
             </div>
+
+            {incidentSubTab === 'form' ? (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {renderIncidentInput()}
+              </div>
+            ) : (
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="text-center space-y-2 mb-4">
+                  <Typography variant="h2" className="text-brand-indigo font-bold text-3xl">사건 진행 상황 추적</Typography>
+                  <Typography variant="p" className="text-slate-500 text-lg">진행 중인 사건의 타임라인을 관리하고 진행 단계를 업데이트하세요.</Typography>
+                </div>
+                <CaseProgressLogger />
+              </div>
+            )}
           </div>
         );
       case 'ai-consultation':
