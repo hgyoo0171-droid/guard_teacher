@@ -91,6 +91,13 @@ export const IncidentForm: React.FC<IncidentFormProps> = ({ onSuccess }) => {
       }),
     });
 
+    if (!response.ok) {
+      throw new Error('백엔드 전송에 실패했습니다.');
+    }
+    
+    return await response.json();
+  };
+
   const onSubmit = async (data: IncidentFormValues) => {
     try {
       try {
