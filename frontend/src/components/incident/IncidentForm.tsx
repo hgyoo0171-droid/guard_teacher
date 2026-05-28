@@ -100,11 +100,10 @@ export const IncidentForm: React.FC<IncidentFormProps> = ({ onSuccess }) => {
 
   const onSubmit = async (data: IncidentFormValues) => {
     try {
-      try {
-        await sendToGenkitBackend(data);
-      } catch (e) {
+      // 백엔드 연동은 백그라운드에서 비동기로 실행하여 UI 블로킹 방지 (무한 대기 해결)
+      sendToGenkitBackend(data).catch(e => {
         console.warn('백엔드 전송 실패 (무시):', e);
-      }
+      });
 
       // ✅ 폼 데이터를 '사건 진행 현황(타임라인)'의 1단계로 Firebase DB에 자동 연동 등록
       try {
