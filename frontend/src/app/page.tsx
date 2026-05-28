@@ -123,19 +123,19 @@ export default function Home() {
   };
 
   // 가해자 타입 한글 매핑
-  const mapPerpetrator = (type: string) => {
+  const mapPerpetrator = (type: string | undefined) => {
     switch (type) {
       case 'STUDENT': return '👤 학생 (Student)';
       case 'PARENT': return '👪 학부모 (Parent)';
       case 'COLLEAGUE': return '💼 동료 교사 (Colleague)';
       case 'ADMINISTRATOR': return '🏫 학교 관리자 (Administrator)';
       case 'THIRD_PARTY': return '👤 제3자 (Third Party)';
-      default: return type;
+      default: return type || '미입력';
     }
   };
 
   // 장소 타입 한글 매핑
-  const mapLocation = (type: string) => {
+  const mapLocation = (type: string | undefined) => {
     switch (type) {
       case 'CLASSROOM': return '🏫 교실';
       case 'STAFF_ROOM': return '☕ 교무실 / 행정실';
@@ -144,7 +144,7 @@ export default function Home() {
       case 'ONLINE': return '📱 온라인 / SNS';
       case 'PHONE': return '📞 전화 통화';
       case 'OTHER': return '📍 기타 장소';
-      default: return type;
+      default: return type || '미입력';
     }
   };
 
@@ -271,11 +271,14 @@ export default function Home() {
             <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-850">
               <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400">체크된 침해 성격 (다중선택)</span>
               <div className="flex flex-wrap gap-1 mt-1.5">
-                {submittedData.natures.map((nat, i) => (
+                {(submittedData.natures || []).map((nat, i) => (
                   <span key={i} className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-brand-indigo/10 text-brand-indigo">
                     #{nat}
                   </span>
                 ))}
+                {(!submittedData.natures || submittedData.natures.length === 0) && (
+                  <span className="text-xs text-slate-500">선택 안함</span>
+                )}
               </div>
             </div>
 
