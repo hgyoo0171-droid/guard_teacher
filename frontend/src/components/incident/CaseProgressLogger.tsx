@@ -22,7 +22,6 @@ interface CaseProgressLoggerProps {
 }
 
 export const CaseProgressLogger: React.FC<CaseProgressLoggerProps> = ({ refreshTrigger = 0 }) => {
-  const { getToken } = useAuth();
   // 백엔드 API 주소 설정 (포트 3000 Express 서버 대응)
   const API_BASE = 'https://teachguard-backend-84878824642.asia-northeast3.run.app';
   
@@ -55,16 +54,27 @@ export const CaseProgressLogger: React.FC<CaseProgressLoggerProps> = ({ refreshT
   const fetchSecureProgressLogs = async () => {
     setLoading(true);
     try {
-      // 이제 직접 Firebase/로컬스토리지를 쓰므로 토큰 검증에 의존하지 않음
-      const token = await getToken();
-      if (token) setSecureToken(token);
+      // 로컬 스토리지에서 먼저 즉각 로드하여 무한 로딩 원천 차단 (데모용)
+      let initialLogs: ProgressLog[] = [];
+      try {
+        initialLogs = JSON.parse(localStorage.getItem('mock_progress_logs') || '[]');
+        setLogs(initialLogs);
+      } catch (e) {}
+
+      // 파이어베이스 연동은 1.5초 내에 응답 없으면 타임아웃 처리
+      const fetchPromise = fetchProgressLogs();
+      const timeoutPromise = new Promise<ProgressLog[]>((_, reject) => 
+        setTimeout(() => reject(new Error('Firebase timeout')), 1500)
+      );
       
-      const data = await fetchProgressLogs();
-      setLogs(data);
+      try {
+        const data = await Promise.race([fetchPromise, timeoutPromise]);
+        setLogs(data); // 파이어베이스 데이터가 성공하면 덮어씀
+      } catch (err) {
+        console.warn('Firebase 로드 지연 또는 실패, 로컬 데이터 유지:', err);
+      }
     } catch (err) {
       console.warn('보안 API 로드 실패, 로컬 데이터 시뮬레이션:', err);
-      // fallback to empty or local if completely fails
-      setLogs([]);
     } finally {
       setLoading(false);
     }
@@ -125,7 +135,7 @@ export const CaseProgressLogger: React.FC<CaseProgressLoggerProps> = ({ refreshT
 
   useEffect(() => {
     fetchSecureProgressLogs();
-  }, [getToken, refreshTrigger]);
+  }, [refreshTrigger]);
 
   // 정렬 모드 변경 시 로그 재배열
   const handleSortToggle = () => {
