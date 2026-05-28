@@ -22,6 +22,7 @@ interface CaseProgressLoggerProps {
 }
 
 export const CaseProgressLogger: React.FC<CaseProgressLoggerProps> = ({ refreshTrigger = 0 }) => {
+  const { getToken } = useAuth();
   // 백엔드 API 주소 설정 (포트 3000 Express 서버 대응)
   const API_BASE = 'https://teachguard-backend-84878824642.asia-northeast3.run.app';
   
