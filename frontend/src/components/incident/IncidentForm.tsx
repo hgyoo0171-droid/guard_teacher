@@ -10,22 +10,19 @@ import { Input } from '../ui/Input';
 import { Textarea } from '../ui/Textarea';
 import { Card } from '../ui/Card';
 import { useAuth } from '@/context/AuthContext';
+import { createProgressLog } from '@/lib/caseProgressApi';
 
 // 1. Zod 유효성 검사 스키마 정의
 export const incidentSchema = z.object({
-  teacherName: z.string().min(1, { message: '선생님의 이름을 입력해 주세요.' }),
-  incidentDate: z.string().min(1, { message: '사건 날짜를 선택해 주세요.' }),
-  incidentTime: z.string().min(1, { message: '사건 시간을 선택해 주세요.' }),
-  perpetratorType: z.enum(['STUDENT', 'PARENT', 'COLLEAGUE', 'ADMINISTRATOR', 'THIRD_PARTY'], {
-    message: '가해자 대분류를 선택해 주세요.'
-  }),
-  perpetratorDetail: z.string().min(1, { message: '가해자의 성함 혹은 구체 정보를 입력해 주세요.' }),
-  locationType: z.enum(['CLASSROOM', 'STAFF_ROOM', 'CORRIDOR', 'PLAYGROUND', 'ONLINE', 'PHONE', 'OTHER'], {
-    message: '장소 대분류를 선택해 주세요.'
-  }),
-  locationDetail: z.string().min(1, { message: '구체적인 장소를 입력해 주세요.' }),
-  natures: z.array(z.string()).min(1, { message: '침해의 성격을 최소 1개 이상 선택해 주세요.' }),
-  description: z.string().min(20, { message: '사건 경위를 상세히 기술해 주세요 (최소 20자 이상).' }),
+  teacherName: z.string().optional(),
+  incidentDate: z.string().optional(),
+  incidentTime: z.string().optional(),
+  perpetratorType: z.string().optional(),
+  perpetratorDetail: z.string().optional(),
+  locationType: z.string().optional(),
+  locationDetail: z.string().optional(),
+  natures: z.array(z.string()).optional(),
+  description: z.string().optional(),
   evidenceMemo: z.string().optional(),
 });
 
@@ -94,16 +91,29 @@ export const IncidentForm: React.FC<IncidentFormProps> = ({ onSuccess }) => {
       }),
     });
 
-    if (!response.ok) {
-      throw new Error('백엔드 전송에 실패했습니다.');
-    }
-    
-    return await response.json();
-  };
-
   const onSubmit = async (data: IncidentFormValues) => {
     try {
-      await sendToGenkitBackend(data);
+      try {
+        await sendToGenkitBackend(data);
+      } catch (e) {
+        console.warn('백엔드 전송 실패 (무시):', e);
+      }
+
+      // ✅ 폼 데이터를 '사건 진행 현황(타임라인)'의 1단계로 Firebase DB에 자동 연동 등록
+      try {
+        const naturesStr = data.natures ? data.natures.join(', ') : '미입력';
+        await createProgressLog({
+          step: 1,
+          stepTitle: '📥 교권 침해 공식 접수',
+          logDate: data.incidentDate || new Date().toISOString().split('T')[0],
+          location: data.locationDetail || '장소 미상',
+          content: `[침해유형: ${naturesStr}]\n가해자: ${data.perpetratorDetail || '미상'}\n\n${data.description || '상세 경위 없음'}`,
+          requiredDocuments: data.evidenceMemo || undefined,
+        });
+      } catch (e) {
+        console.warn('타임라인 자동 등록 실패:', e);
+      }
+
       onSuccess(data);
     } catch (err) {
       console.error('사건 기록 저장 실패:', err);

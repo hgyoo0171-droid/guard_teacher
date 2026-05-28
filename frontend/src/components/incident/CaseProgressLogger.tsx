@@ -17,7 +17,11 @@ import {
 } from '@/lib/caseProgressApi';
 import { useAuth } from '@/context/AuthContext';
 
-export const CaseProgressLogger: React.FC = () => {
+interface CaseProgressLoggerProps {
+  refreshTrigger?: number;
+}
+
+export const CaseProgressLogger: React.FC<CaseProgressLoggerProps> = ({ refreshTrigger = 0 }) => {
   const { getToken } = useAuth();
   // 백엔드 API 주소 설정 (포트 3000 Express 서버 대응)
   const API_BASE = 'https://teachguard-backend-84878824642.asia-northeast3.run.app';
@@ -51,18 +55,16 @@ export const CaseProgressLogger: React.FC = () => {
   const fetchSecureProgressLogs = async () => {
     setLoading(true);
     try {
+      // 이제 직접 Firebase/로컬스토리지를 쓰므로 토큰 검증에 의존하지 않음
       const token = await getToken();
-      if (token) {
-        setSecureToken(token);
-        const data = await fetchProgressLogs(token);
-        setLogs(data);
-      } else {
-        setLogs(MOCK_PROGRESS_LOGS);
-      }
+      if (token) setSecureToken(token);
+      
+      const data = await fetchProgressLogs();
+      setLogs(data);
     } catch (err) {
-      console.warn('보안 API 백엔드 호출 실패, 로컬 시뮬레이션으로 전환:', err);
-      // 백엔드가 아직 실행 중이지 않거나 오류 발생 시 로컬 목업 데이터 주입 (UI 데모 보장)
-      setLogs(MOCK_PROGRESS_LOGS);
+      console.warn('보안 API 로드 실패, 로컬 데이터 시뮬레이션:', err);
+      // fallback to empty or local if completely fails
+      setLogs([]);
     } finally {
       setLoading(false);
     }
@@ -123,7 +125,7 @@ export const CaseProgressLogger: React.FC = () => {
 
   useEffect(() => {
     fetchSecureProgressLogs();
-  }, [getToken]);
+  }, [getToken, refreshTrigger]);
 
   // 정렬 모드 변경 시 로그 재배열
   const handleSortToggle = () => {

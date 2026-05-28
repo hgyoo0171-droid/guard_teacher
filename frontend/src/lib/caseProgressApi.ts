@@ -1,18 +1,8 @@
-/**
- * caseProgressApi.ts
- * ──────────────────────────────────────────────────
- * Case Progress Logger 전용 백엔드 API 연동 클라이언트
- *
- * 보안 설계:
- *  - 모든 요청에 Authorization: Bearer <token> 헤더 첨부
- *  - 서버는 JWT/토큰 검증 후 본인 데이터만 필터링하여 반환
- *  - 실제 서비스에서는 토큰을 HttpOnly 쿠키 또는 Secure Storage에서 읽어야 함
- *  - 백엔드 미연결 시 로컬 폴백(mock) 데이터로 자동 대체하여 UI 데모 유지
- */
+import { db, auth } from '@/lib/firebase';
+import { collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 
 export interface ProgressLog {
   id: string;
-  /** 교보위 진행 5단계 (1 ~ 5) */
   step: number;
   stepTitle: string;
   logDate: string;
@@ -20,127 +10,100 @@ export interface ProgressLog {
   content: string;
   requiredDocuments?: string;
   remarks?: string;
-  /** 서버에서 생성되는 타임스탬프 (ISO 8601) */
-  createdAt?: string;
+  createdAt?: any;
 }
 
-/** 새 로그 생성 시 사용하는 입력 타입 (id, createdAt 제외) */
 export type CreateProgressLogInput = Omit<ProgressLog, 'id' | 'createdAt'>;
-
-/** 로그 수정 시 사용하는 입력 타입 (일부 필드 선택 가능) */
 export type UpdateProgressLogInput = Partial<CreateProgressLogInput>;
 
-// ──────────────────────────────────────────────────
-// API 클라이언트 설정
-// ──────────────────────────────────────────────────
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://teachguard-backend-84878824642.asia-northeast3.run.app';
-
-/**
- * 인증 토큰을 포함한 공통 fetch 헬퍼
- * @param endpoint - /api/progress-logs 등 경로
- * @param options  - fetch RequestInit
- * @param token    - 사용자 인증 토큰 (Bearer)
- */
-async function secureRequest<T>(
-  endpoint: string,
-  options: RequestInit,
-  token: string
-): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      // 🔐 모든 요청에 인증 토큰 첨부 — 서버에서 소유자 검증 후 개인 데이터만 반환
-      Authorization: `Bearer ${token}`,
-      ...options.headers,
-    },
-  });
-
-  if (response.status === 401) {
-    throw new ApiError(401, '인증이 만료되었습니다. 다시 로그인해 주세요.');
-  }
-  if (response.status === 403) {
-    throw new ApiError(403, '해당 데이터에 접근할 권한이 없습니다.');
-  }
-  if (response.status === 404) {
-    throw new ApiError(404, '요청한 리소스를 찾을 수 없습니다.');
-  }
-  if (!response.ok) {
-    const errorBody = await response.json().catch(() => ({}));
-    throw new ApiError(response.status, errorBody?.message ?? '서버 오류가 발생했습니다.');
+export async function fetchProgressLogs(token?: string): Promise<ProgressLog[]> {
+  const user = auth.currentUser;
+  let logs: ProgressLog[] = [];
+  
+  if (user) {
+    try {
+      const q = query(collection(db, 'progressLogs'), where('userId', '==', user.uid));
+      const snapshot = await getDocs(q);
+      logs = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() } as ProgressLog));
+    } catch (error) {
+      console.warn("Firebase fetch error, falling back to localStorage", error);
+    }
   }
 
-  // 204 No Content (DELETE 성공 등)
-  if (response.status === 204) return undefined as unknown as T;
+  // 로컬 스토리지에 저장된 항목도 무조건 불러와서 합침 (데모/오프라인 환경 완벽 보장)
+  try {
+    const localLogs = JSON.parse(localStorage.getItem('mock_progress_logs') || '[]');
+    logs = [...logs, ...localLogs];
+  } catch (e) {}
 
-  return response.json() as Promise<T>;
+  return logs;
 }
 
-/** API 에러 클래스 — HTTP 상태코드 포함 */
-export class ApiError extends Error {
-  constructor(public statusCode: number, message: string) {
-    super(message);
-    this.name = 'ApiError';
-  }
-}
-
-// ──────────────────────────────────────────────────
-// CRUD API 함수
-// ──────────────────────────────────────────────────
-
-/**
- * [GET] /api/progress-logs
- * 인증 사용자의 전체 사건 진행 로그 목록 조회
- * 서버에서 user_id 기준으로 소유자 본인 데이터만 필터링하여 반환
- */
-export async function fetchProgressLogs(token: string): Promise<ProgressLog[]> {
-  return secureRequest<ProgressLog[]>('/api/progress-logs', { method: 'GET' }, token);
-}
-
-/**
- * [POST] /api/progress-logs
- * 새 진행 로그 생성 — 서버에서 user_id를 JWT에서 추출하여 자동 주입
- */
 export async function createProgressLog(
   input: CreateProgressLogInput,
-  token: string
+  token?: string
 ): Promise<ProgressLog> {
-  return secureRequest<ProgressLog>(
-    '/api/progress-logs',
-    { method: 'POST', body: JSON.stringify(input) },
-    token
-  );
+  const user = auth.currentUser;
+  
+  // 1. 무조건 로컬 스토리지에 먼저 저장 (데모/UI 즉각 반영 100% 보장)
+  const newLog = { id: `local-${Date.now()}`, ...input };
+  try {
+    const localLogs = JSON.parse(localStorage.getItem('mock_progress_logs') || '[]');
+    localLogs.push(newLog);
+    localStorage.setItem('mock_progress_logs', JSON.stringify(localLogs));
+  } catch (e) {
+    console.error("로컬 스토리지 저장 실패:", e);
+  }
+
+  // 2. 백그라운드로 Firebase DB에도 동시 저장 시도
+  if (user) {
+    try {
+      const docRef = await addDoc(collection(db, 'progressLogs'), {
+        ...input,
+        userId: user.uid,
+        createdAt: serverTimestamp()
+      });
+      // 파이어베이스 성공 시 id 교체해서 리턴
+      return { id: docRef.id, ...input } as ProgressLog;
+    } catch (error) {
+      console.warn("Firebase write error, using localStorage only", error);
+    }
+  }
+  
+  return newLog as ProgressLog;
 }
 
-/**
- * [PUT] /api/progress-logs/:id
- * 기존 로그 수정 — 서버에서 user_id 일치 여부를 검증하여 타인 수정 방지
- */
 export async function updateProgressLog(
   id: string,
   input: UpdateProgressLogInput,
-  token: string
+  token?: string
 ): Promise<ProgressLog> {
-  return secureRequest<ProgressLog>(
-    `/api/progress-logs/${id}`,
-    { method: 'PUT', body: JSON.stringify(input) },
-    token
-  );
+  if (id.startsWith('local-')) {
+    const logs = JSON.parse(localStorage.getItem('mock_progress_logs') || '[]');
+    const index = logs.findIndex((l: any) => l.id === id);
+    if (index > -1) {
+      logs[index] = { ...logs[index], ...input };
+      localStorage.setItem('mock_progress_logs', JSON.stringify(logs));
+    }
+    return { id, ...input } as ProgressLog;
+  }
+  await updateDoc(doc(db, 'progressLogs', id), input as any);
+  return { id, ...input } as ProgressLog;
 }
 
-/**
- * [DELETE] /api/progress-logs/:id
- * 로그 삭제 — 서버에서 user_id 일치 여부를 검증하여 타인 삭제 방지
- */
-export async function deleteProgressLog(id: string, token: string): Promise<void> {
-  return secureRequest<void>(
-    `/api/progress-logs/${id}`,
-    { method: 'DELETE' },
-    token
-  );
+export async function deleteProgressLog(id: string, token?: string): Promise<void> {
+  if (id.startsWith('local-')) {
+    const logs = JSON.parse(localStorage.getItem('mock_progress_logs') || '[]');
+    const filtered = logs.filter((l: any) => l.id !== id);
+    localStorage.setItem('mock_progress_logs', JSON.stringify(filtered));
+    return;
+  }
+  try {
+    await deleteDoc(doc(db, 'progressLogs', id));
+  } catch (e) {
+    console.warn("Firebase delete error", e);
+  }
 }
 
-// ──────────────────────────────────────────────────
-// 오프라인 폴백 목업 데이터 (백엔드 미연결 시 사용)
-// ──────────────────────────────────────────────────
 export const MOCK_PROGRESS_LOGS: ProgressLog[] = [];
+

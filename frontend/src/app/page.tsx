@@ -26,8 +26,8 @@ export default function Home() {
   // 메인 액티브 탭 상태 관리
   const [activePath, setActivePath] = useState('dashboard');
   
-  // 사건 수첩 서브 탭 상태 관리
-  const [incidentSubTab, setIncidentSubTab] = useState<'form' | 'progress'>('form');
+  // 사건 수첩 서브 탭 상태 제거, 대신 갱신 트리거 추가
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   
   // 폼 테스트 관련 상태
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -52,6 +52,7 @@ export default function Home() {
   const handleFormSuccess = (data: IncidentFormValues) => {
     setSubmittedData(data);
     setFormSubmitted(true);
+    setRefreshTrigger(prev => prev + 1); // 타임라인 즉시 새로고침
   };
 
   // 판례 검색 핸들러
@@ -460,46 +461,31 @@ export default function Home() {
         return renderDashboard();
       case 'incident-log':
         return (
-          <div className="space-y-8 max-w-4xl mx-auto animate-in fade-in duration-300">
-            {/* 서브 탭 네비게이션 */}
-            <div className="flex justify-center mb-6">
-              <div className="inline-flex bg-slate-100 dark:bg-slate-800 rounded-2xl p-1.5 shadow-inner">
-                <button
-                  onClick={() => setIncidentSubTab('form')}
-                  className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 ${
-                    incidentSubTab === 'form'
-                      ? 'bg-white dark:bg-slate-700 text-brand-indigo shadow-sm'
-                      : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-                  }`}
-                >
-                  📝 새 사건 기록하기
-                </button>
-                <button
-                  onClick={() => setIncidentSubTab('progress')}
-                  className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 ${
-                    incidentSubTab === 'progress'
-                      ? 'bg-white dark:bg-slate-700 text-brand-indigo shadow-sm'
-                      : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-                  }`}
-                >
-                  📊 사건 진행 현황
-                </button>
+          <div className="space-y-16 max-w-7xl mx-auto animate-in fade-in duration-300">
+            <div className="text-center space-y-2 mb-4">
+              <Typography variant="h2" className="text-brand-indigo font-bold text-3xl">나의 사건 수첩 & 진행 상황 추적</Typography>
+              <Typography variant="p" className="text-slate-500 text-lg">초기 사건을 기록하고, 이후 진행되는 모든 법적/행정적 절차를 한눈에 관리하세요.</Typography>
+            </div>
+            
+            {/* 상단: 초기 접수 폼 */}
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="flex items-center gap-2 mb-6 ml-2">
+                 <span className="bg-brand-indigo text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-sm">STEP 1</span>
+                 <Typography variant="h3" className="text-2xl font-bold text-slate-800 dark:text-slate-200">초기 침해 사건 기록</Typography>
               </div>
+              {renderIncidentInput()}
             </div>
 
-            {incidentSubTab === 'form' ? (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                {renderIncidentInput()}
+            <hr className="border-slate-200 dark:border-slate-800" />
+
+            {/* 하단: 사건 진행 상황 타임라인 */}
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="flex items-center gap-2 mb-6 ml-2">
+                 <span className="bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-sm">STEP 2</span>
+                 <Typography variant="h3" className="text-2xl font-bold text-slate-800 dark:text-slate-200">사건 진행 타임라인 및 추가 이력 등록</Typography>
               </div>
-            ) : (
-              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="text-center space-y-2 mb-4">
-                  <Typography variant="h2" className="text-brand-indigo font-bold text-3xl">사건 진행 상황 추적</Typography>
-                  <Typography variant="p" className="text-slate-500 text-lg">진행 중인 사건의 타임라인을 관리하고 진행 단계를 업데이트하세요.</Typography>
-                </div>
-                <CaseProgressLogger />
-              </div>
-            )}
+              <CaseProgressLogger refreshTrigger={refreshTrigger} />
+            </div>
           </div>
         );
       case 'ai-consultation':
