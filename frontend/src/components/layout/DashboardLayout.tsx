@@ -23,6 +23,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, acti
         return '💬 AI 안심 상담소';
       case 'settings':
         return '⚙️ 설정 및 매뉴얼';
+      case 'trend':
+        return '📊 예방 및 트렌드 분석 리포트';
       default:
         return '홈 (종합 대시보드)';
     }

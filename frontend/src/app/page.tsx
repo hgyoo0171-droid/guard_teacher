@@ -505,6 +505,12 @@ export default function Home() {
             <EmergencyContacts />
           </div>
         );
+      case 'trend':
+        return (
+          <div className="space-y-12">
+            <TrendAnalysisReport />
+          </div>
+        );
       default:
         return renderDashboard();
     }
