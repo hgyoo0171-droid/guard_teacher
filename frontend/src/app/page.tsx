@@ -428,7 +428,26 @@ export default function Home() {
 
         <hr className="border-slate-100" />
 
-        {/* 법률 아이템 3 */}
+        {/* 법률 아이템 3 (긴급 패치: 보도자료 내용 직접 삽입) */}
+        <div className="p-4 rounded-xl hover:bg-slate-50 transition-all duration-200 border-l-4 border-l-brand-azure bg-brand-azure/5">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2 py-1 bg-brand-azure text-white text-[10px] font-bold rounded-md">교육부 공식 발표</span>
+            <Typography variant="h4" className="text-slate-800 text-base font-bold">2026.01. 「교권 회복 및 보호 강화 방안」 핵심 요약</Typography>
+          </div>
+          <Typography variant="p" className="text-slate-600 text-sm mt-2 leading-relaxed">
+            <strong>1. 중대한 교육활동 침해 엄정 대응:</strong> 상해·폭행 등 중대 사안에 대해 학교장의 긴급조치 권한 신설 및 관할청 고발 실행력 확보 (과태료 최고 300만원 상향)<br/>
+            <strong>2. 교사 개인 대신 기관이 대응:</strong> 개별 교사의 휴대전화가 아닌, 학교 단위 '민원대응팀' 및 온라인(이어드림)으로 민원 창구 단일화 확립<br/>
+            <strong>3. 지역 단위 교권보호 네트워크 강화:</strong> 전국 교육활동보호센터(에듀힐링센터)를 110여 개로 확대하여 접근성 강화 및 법률·심리 상담 원스톱 지원<br/>
+            <strong>4. 피해교원 지원 확대:</strong> 중대 피해를 입은 교원에게 최대 5일 이내의 특별휴가 부여 및 마음돌봄 휴가 실질적 보장
+          </Typography>
+          <Typography variant="p" className="text-slate-400 text-xs mt-2 italic">
+            * 본 앱(TeachGuard)은 위 교육부 보도자료("교사가 안심하고 가르치는 학교를 만들겠습니다")의 정책 방향에 맞추어 설계되었습니다.
+          </Typography>
+        </div>
+
+        <hr className="border-slate-100" />
+
+        {/* 법률 아이템 4 */}
         <div className="p-4 rounded-xl hover:bg-slate-50 transition-all duration-200">
           <Typography variant="h4" className="text-slate-800 text-base">전국 에듀힐링 센터 및 상담 처 정보</Typography>
           <Typography variant="p" className="text-slate-500 text-sm mt-1">
