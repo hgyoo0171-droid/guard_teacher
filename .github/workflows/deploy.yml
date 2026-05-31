@@ -9,6 +9,7 @@ env:
   PROJECT_ID: studio-6453048279-17b21
   REGION: asia-northeast3
   REPO_NAME: teachguard-repo
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build-and-deploy:
