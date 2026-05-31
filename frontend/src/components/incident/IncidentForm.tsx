@@ -128,7 +128,7 @@ export const IncidentForm: React.FC<IncidentFormProps> = ({ onSuccess }) => {
   };
 
   return (
-    <Card hoverable={false} className="bg-white dark:bg-slate-900 p-8 border border-slate-100 dark:border-slate-800 shadow-md">
+    <div className="w-full font-sans">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         
         {/* 교사 성함 및 시간 */}
@@ -158,7 +158,7 @@ export const IncidentForm: React.FC<IncidentFormProps> = ({ onSuccess }) => {
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">가해자 대분류</label>
             <select
-              className={`w-full px-4 py-3 rounded-xl border bg-white/50 dark:bg-slate-850 backdrop-blur-sm transition-all duration-200 outline-none text-sm text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 focus:border-brand-azure focus:ring-2 focus:ring-brand-azure/20
+              className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-800 transition-all duration-200 outline-none text-sm text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700 focus:border-brand-azure focus:ring-2 focus:ring-brand-azure/20
                 ${errors.perpetratorType ? 'border-red-500 ring-2 ring-red-500/10' : ''}`}
               {...register('perpetratorType')}
             >
@@ -187,7 +187,7 @@ export const IncidentForm: React.FC<IncidentFormProps> = ({ onSuccess }) => {
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">장소 대분류</label>
             <select
-              className={`w-full px-4 py-3 rounded-xl border bg-white/50 dark:bg-slate-850 backdrop-blur-sm transition-all duration-200 outline-none text-sm text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 focus:border-brand-azure focus:ring-2 focus:ring-brand-azure/20
+              className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-800 transition-all duration-200 outline-none text-sm text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700 focus:border-brand-azure focus:ring-2 focus:ring-brand-azure/20
                 ${errors.locationType ? 'border-red-500 ring-2 ring-red-500/10' : ''}`}
               {...register('locationType')}
             >
@@ -270,6 +270,6 @@ export const IncidentForm: React.FC<IncidentFormProps> = ({ onSuccess }) => {
         </div>
 
       </form>
-    </Card>
+    </div>
   );
 };
