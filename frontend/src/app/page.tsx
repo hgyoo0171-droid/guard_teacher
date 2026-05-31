@@ -459,8 +459,9 @@ export default function Home() {
             <strong>3. 지역 단위 교권보호 네트워크 강화:</strong> 전국 교육활동보호센터(에듀힐링센터)를 110여 개로 확대하여 접근성 강화 및 법률·심리 상담 원스톱 지원<br/>
             <strong>4. 피해교원 지원 확대:</strong> 중대 피해를 입은 교원에게 최대 5일 이내의 특별휴가 부여 및 마음돌봄 휴가 실질적 보장
           </Typography>
-          <Typography variant="p" className="text-slate-400 text-xs mt-2 italic">
-            * 본 앱(TeachGuard)은 위 교육부 보도자료("교사가 안심하고 가르치는 학교를 만들겠습니다")의 정책 방향에 맞추어 설계되었습니다.
+          <Typography variant="p" className="text-slate-400 text-xs mt-2 italic flex flex-col gap-1">
+            <span>* 본 앱(TeachGuard)은 위 교육부 보도자료("교사가 안심하고 가르치는 학교를 만들겠습니다")의 정책 방향에 맞추어 설계되었습니다.</span>
+            <span className="text-slate-500 font-semibold">[출처: 대한민국 교육부 공공데이터 - 공공누리 제1유형]</span>
           </Typography>
         </div>
 
