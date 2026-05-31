@@ -229,12 +229,6 @@ export default function Home() {
   // ============================================
   const renderIncidentInput = () => (
     <div className="max-w-4xl mx-auto space-y-6 animate-smooth-height">
-      <div className="space-y-1 text-center mb-8">
-        <Typography variant="h1" className="text-brand-indigo font-extrabold text-3xl">나의 사건 수첩</Typography>
-        <Typography variant="p" className="text-slate-500 text-lg">
-          사건을 기록하고 암호화하여 안전하게 보관합니다.
-        </Typography>
-      </div>
 
       {formSubmitted && submittedData ? (
         <Card hoverable={false} className="bg-white dark:bg-slate-900 p-8 space-y-6 border border-emerald-100 dark:border-emerald-950 font-sans shadow-lg animate-smooth-height">
