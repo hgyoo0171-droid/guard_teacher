@@ -149,61 +149,78 @@ export default function Home() {
   };
 
   // ============================================
-  // 1. 종합 대시보드 뷰
+  // 1. 종합 대시보드 뷰 (Premium Landing Hero)
   // ============================================
   const renderDashboard = () => {
     const displayName = user?.displayName || user?.email?.split('@')[0] || '익명 교사';
 
     return (
-    <div className="space-y-8 max-w-5xl mx-auto">
-      {/* 웰컴 배너 - 텍스트 단순화 */}
-      <div className="rounded-3xl p-8 bg-brand-indigo text-white shadow-lg flex flex-col items-center text-center space-y-3">
-        <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-2">
-          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
-        </div>
-        <h1 className="text-white text-3xl font-extrabold leading-normal pb-1">
-          {displayName} 선생님, 안심하세요.
-        </h1>
-        <p className="text-slate-100 text-lg leading-relaxed">
-          지금 당장 필요하신 기능을 선택해 주세요.
-        </p>
-      </div>
-
-      {/* 퀵 액션 거대 버튼 2개 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="w-full flex flex-col items-center justify-center min-h-[80vh] animate-in fade-in duration-700">
         
-        {/* 사건 수첩 가기 */}
-        <button 
-          onClick={() => setActivePath('incident-log')}
-          className="group flex flex-col items-center justify-center p-12 bg-white rounded-3xl shadow-md border-2 border-slate-100 hover:border-brand-indigo hover:shadow-xl transition-all duration-300 text-center"
-        >
-          <div className="w-24 h-24 bg-brand-indigo/10 rounded-full flex items-center justify-center text-brand-indigo group-hover:scale-110 transition-transform duration-300 mb-6">
-            <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
+        {/* 중앙 Hero 텍스트 */}
+        <div className="text-center space-y-6 mb-16 px-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel text-white/90 text-sm font-bold tracking-wider uppercase mb-2 animate-float">
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
+            </span>
+            TeachGuard AI v2.0
           </div>
-          <Typography variant="h2" className="text-slate-800 text-2xl font-black mb-2 group-hover:text-brand-indigo">나의 사건 수첩 작성</Typography>
-          <Typography variant="p" className="text-slate-500 text-base">침해 사실을 기록하고 진행 상황을 추적합니다.</Typography>
-        </button>
+          <h1 className="text-white text-5xl md:text-7xl font-extrabold tracking-tight drop-shadow-2xl font-outfit">
+            교사를 위한 단 하나의 <br className="hidden md:block"/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-indigo-300">AI 안심 방패</span>
+          </h1>
+          <p className="text-slate-200 text-lg md:text-xl font-medium max-w-2xl mx-auto drop-shadow-md">
+            {displayName} 선생님, 교육 현장의 어려움과 부당한 징계로부터<br/>선생님의 권리를 안전하게 지켜드립니다.
+          </p>
+        </div>
 
-        {/* AI 상담 가기 */}
-        <button 
-          onClick={() => setActivePath('ai-consultation')}
-          className="group flex flex-col items-center justify-center p-12 bg-white rounded-3xl shadow-md border-2 border-slate-100 hover:border-brand-azure hover:shadow-xl transition-all duration-300 text-center"
-        >
-          <div className="w-24 h-24 bg-brand-azure/10 rounded-full flex items-center justify-center text-brand-azure group-hover:scale-110 transition-transform duration-300 mb-6">
-            <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 4.418 9 8z" />
-            </svg>
-          </div>
-          <Typography variant="h2" className="text-slate-800 text-2xl font-black mb-2 group-hover:text-brand-azure">AI 챗봇 상담 및 판례</Typography>
-          <Typography variant="p" className="text-slate-500 text-base">AI에게 위로를 받고 관련된 판례를 확인합니다.</Typography>
-        </button>
+        {/* 프리미엄 벤토 그리드(Bento Grid) 카드 */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl px-4">
+          
+          {/* 사건 수첩 카드 */}
+          <button 
+            onClick={() => setActivePath('incident-log')}
+            className="md:col-span-2 text-left group glass-card p-10 flex flex-col justify-between min-h-[280px]"
+          >
+            <div>
+              <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg transform group-hover:scale-110 transition-transform duration-500">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </div>
+              <h2 className="text-slate-800 dark:text-white text-3xl font-bold mb-3 font-noto">나의 사건 수첩</h2>
+              <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed max-w-md font-medium">
+                침해 사실을 암호화하여 기록하고, 증거 수집부터 대응 절차까지 체계적으로 관리하세요.
+              </p>
+            </div>
+            <div className="mt-8 flex items-center text-indigo-600 dark:text-indigo-400 font-bold group-hover:translate-x-2 transition-transform duration-300">
+              기록 시작하기 <span className="ml-2">→</span>
+            </div>
+          </button>
 
+          {/* AI 상담 카드 */}
+          <button 
+            onClick={() => setActivePath('ai-consultation')}
+            className="md:col-span-1 text-left group glass-card p-10 flex flex-col justify-between min-h-[280px]"
+          >
+            <div>
+              <div className="w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg transform group-hover:scale-110 transition-transform duration-500">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 4.418 9 8z" />
+                </svg>
+              </div>
+              <h2 className="text-slate-800 dark:text-white text-3xl font-bold mb-3 font-noto">AI 안심 상담</h2>
+              <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed font-medium">
+                Gemini Pro 엔진이 실시간으로 법적 판례와 구제 방안을 분석해 드립니다.
+              </p>
+            </div>
+            <div className="mt-8 flex items-center text-blue-600 dark:text-blue-400 font-bold group-hover:translate-x-2 transition-transform duration-300">
+              상담하기 <span className="ml-2">→</span>
+            </div>
+          </button>
+
+        </div>
       </div>
-    </div>
     );
   };
 

@@ -31,7 +31,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, acti
   };
 
   return (
-    <div className="min-h-screen bg-brand-grey/40 dark:bg-slate-950 transition-colors duration-200">
+    <div className="min-h-screen bg-gradient-premium transition-colors duration-200">
       
       {/* 1. 좌측 사이드바 */}
       <Sidebar 
@@ -51,7 +51,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, acti
         />
 
         {/* 3. 실제 메인 영역 */}
-        <main className="flex-1 p-6 md:p-8 animate-smooth-height">
+        <main className="flex-1 p-6 md:p-8 md:pt-10 lg:p-12 lg:pt-14 animate-smooth-height">
           {children}
         </main>
 

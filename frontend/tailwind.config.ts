@@ -28,12 +28,14 @@ const config: Config = {
         }
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "sans-serif"],
-        serif: ["var(--font-alegreya)", "serif"],
+        sans: ["var(--font-noto)", "var(--font-inter)", "sans-serif"],
+        serif: ["var(--font-outfit)", "var(--font-alegreya)", "serif"],
       },
       animation: {
         "smooth-height": "smoothHeight 0.3s ease-in-out",
         "loading-pulse": "loadingPulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "gradient-xy": "gradientXY 15s ease infinite",
+        "float": "float 6s ease-in-out infinite",
       },
       keyframes: {
         smoothHeight: {
@@ -43,6 +45,20 @@ const config: Config = {
         loadingPulse: {
           "0%, 100%": { opacity: "1", transform: "scale(1)" },
           "50%": { opacity: ".4", transform: "scale(0.98)" },
+        },
+        gradientXY: {
+          "0%, 100%": {
+            "background-size": "400% 400%",
+            "background-position": "0% 0%",
+          },
+          "50%": {
+            "background-size": "200% 200%",
+            "background-position": "100% 100%",
+          },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
         }
       }
     },
