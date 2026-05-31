@@ -258,10 +258,10 @@ export const CaseProgressLogger: React.FC<CaseProgressLoggerProps> = ({ refreshT
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 font-sans antialiased text-slate-800 dark:text-slate-200">
+    <div className="font-sans antialiased text-slate-800 dark:text-slate-200">
       
-      {/* 좌측 2개 컬럼: 진행 스텝 비주얼 스테퍼 및 타임라인 피드 */}
-      <div className="lg:col-span-2 space-y-6">
+      {/* 진행 스텝 비주얼 스테퍼 및 타임라인 피드 */}
+      <div className="space-y-6 max-w-5xl mx-auto">
         
         {/* 프리미엄 보안 헤더 및 NEIS 토큰 정보 */}
         <Card hoverable={false} className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 border border-emerald-100 dark:border-emerald-900/50 p-5 rounded-3xl shadow-sm transition-all duration-300">
@@ -521,137 +521,6 @@ export const CaseProgressLogger: React.FC<CaseProgressLoggerProps> = ({ refreshT
               })}
             </div>
           )}
-        </Card>
-      </div>
-
-      {/* 우측 1개 컬럼: 사건 진행 단계 기록 등록 폼 */}
-      <div className="space-y-6">
-        <Card hoverable={false} className="bg-white dark:bg-slate-900 p-6 shadow-md border border-slate-100 dark:border-slate-800 rounded-3xl space-y-6">
-          <div className="pb-3 border-b border-slate-100 dark:border-slate-800">
-            <Typography variant="h3" className="text-slate-800 dark:text-slate-100 font-extrabold text-base">
-              진행 이력 추가 등록 폼
-            </Typography>
-            <Typography variant="p" className="text-[11px] text-slate-400 mt-1">교보위 청문회까지의 법적 진행 정보를 안전히 누적 기록합니다.</Typography>
-          </div>
-
-          <form onSubmit={handleFormSubmit} className="space-y-4">
-            
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-500 dark:text-slate-400">진행 스텝 대분류 선택</label>
-              <select
-                value={step}
-                onChange={(e) => setStep(e.target.value)}
-                className="w-full px-4 py-3 rounded-2xl border bg-white/50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 outline-none text-xs text-slate-800 dark:text-slate-200 focus:border-brand-indigo focus:ring-2 focus:ring-brand-indigo/10 transition-all font-bold"
-              >
-                <option value="1">1단계: 침해 공식 접수</option>
-                <option value="2">2단계: 교육청 이관 및 예비 조사</option>
-                <option value="3">3단계: 소명자료 및 추가 제출</option>
-                <option value="4">4단계: 교보위 심의 개최 예정</option>
-                <option value="5">5단계: 최종 처분 결과 수령</option>
-              </select>
-            </div>
-
-            <Input
-              label="기록 / 대처 날짜 선택"
-              type="date"
-              value={logDate}
-              onChange={(e) => setLogDate(e.target.value)}
-              className="rounded-2xl"
-            />
-
-            <Input
-              label="회의 / 조사 / 서류접수 장소"
-              placeholder="예: 서울한국초등학교 교무실, 교육지원청 실사실"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="rounded-2xl"
-            />
-
-            <Textarea
-              label="상세 대응 상황 및 대처 내용 (필수)"
-              placeholder="예: 장학사와 동료 교사 배석 하에 예비 조사에 응했으며 침해 폭언 상황의 녹취 요약본을 제출 완료함."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={4}
-              required
-              className="rounded-2xl"
-            />
-
-            <Textarea
-              label="준비 / 보완 제출 서류 설명"
-              placeholder="예: 목격 교사 확인서 2부, 심리 치료 소견서 1부"
-              value={requiredDocuments}
-              onChange={(e) => setRequiredDocuments(e.target.value)}
-              rows={2}
-              className="rounded-2xl"
-            />
-
-            {/* 드래그 앤 드롭 파일 업로드 시뮬레이션 영역 */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-500 dark:text-slate-400">증명자료 / 서류 암호화 업로드 목업</label>
-              
-              <div 
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                className={`border-2 border-dashed rounded-2xl p-4 text-center cursor-pointer transition-all duration-300 flex flex-col items-center justify-center gap-2
-                  ${isDragging 
-                    ? 'border-brand-indigo bg-brand-indigo/5' 
-                    : 'border-slate-200 dark:border-slate-800 bg-slate-50/50 hover:bg-slate-50 dark:hover:bg-slate-850'}`}
-              >
-                <input 
-                  type="file" 
-                  id="file-upload" 
-                  multiple 
-                  className="hidden" 
-                  onChange={handleFileSelect}
-                />
-                <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center gap-1.5 w-full">
-                  <div className="w-8 h-8 rounded-full bg-brand-indigo/10 text-brand-indigo flex items-center justify-center">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
-                  </div>
-                  <span className="text-[10px] font-extrabold text-slate-600 dark:text-slate-350">클릭하거나 파일을 드래그하여 드롭하세요</span>
-                  <span className="text-[8px] text-slate-400">PDF, PNG, JPG 파일 최대 10MB (SSL 격리 보관)</span>
-                </label>
-              </div>
-
-              {/* 업로드된 파일 피드백 */}
-              {uploadedFiles.length > 0 && (
-                <div className="mt-2 space-y-1.5">
-                  {uploadedFiles.map((file, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 text-[10px] font-semibold">
-                      <div className="flex items-center gap-2 truncate">
-                        <span className="text-emerald-500 text-xs">🔒</span>
-                        <span className="text-slate-700 dark:text-slate-200 truncate max-w-[130px]">{file.name}</span>
-                        <span className="text-slate-400 text-[8px]">{file.size}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[8px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 px-1 rounded">업로드완료</span>
-                        <button type="button" onClick={() => removeFile(idx)} className="text-rose-500 font-extrabold text-xs hover:text-rose-600">✕</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <Input
-              label="주의 / 비고 메모 (선택)"
-              placeholder="예: 변호사 조언서 내용을 기반으로 답변 준비할 것"
-              value={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
-              className="rounded-2xl"
-            />
-
-            <div className="pt-2">
-              <Button type="submit" variant="primary" className="w-full shadow-md rounded-2xl py-3 font-extrabold" isLoading={isSubmitting}>
-                암호화 진행로그 저장하기
-              </Button>
-            </div>
-
-          </form>
         </Card>
       </div>
 

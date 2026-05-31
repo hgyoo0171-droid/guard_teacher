@@ -108,16 +108,16 @@ export const IncidentForm: React.FC<IncidentFormProps> = ({ onSuccess }) => {
       // ✅ 폼 데이터를 '사건 진행 현황(타임라인)'의 1단계로 Firebase DB에 자동 연동 등록
       try {
         const naturesStr = data.natures ? data.natures.join(', ') : '미입력';
-        await createProgressLog({
+        createProgressLog({
           step: 1,
           stepTitle: '📥 교권 침해 공식 접수',
           logDate: data.incidentDate || new Date().toISOString().split('T')[0],
           location: data.locationDetail || '장소 미상',
           content: `[침해유형: ${naturesStr}]\n가해자: ${data.perpetratorDetail || '미상'}\n\n${data.description || '상세 경위 없음'}`,
           requiredDocuments: data.evidenceMemo || undefined,
-        });
+        }).catch(e => console.warn('타임라인 자동 등록 백그라운드 실패:', e));
       } catch (e) {
-        console.warn('타임라인 자동 등록 실패:', e);
+        console.warn('타임라인 연동 로직 에러:', e);
       }
 
       onSuccess(data);
