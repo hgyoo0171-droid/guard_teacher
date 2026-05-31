@@ -166,21 +166,21 @@ export default function Home() {
             </span>
             TeachGuard AI v2.0
           </div>
-          <h1 className="text-slate-900 dark:text-white text-5xl md:text-7xl font-extrabold tracking-tight drop-shadow-sm font-outfit">
-            교사를 위한 단 하나의 <br className="hidden md:block"/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-indigo to-brand-azure">AI 안심 방패</span>
+          <h1 className="text-slate-900 dark:text-white text-4xl md:text-6xl font-extrabold tracking-tight font-outfit">
+            교사를 위한 단 하나의 <br className="hidden md:block"/> <span className="text-brand-indigo">AI 안심 방패</span>
           </h1>
-          <p className="text-slate-600 dark:text-slate-400 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
+          <p className="text-slate-500 dark:text-slate-400 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
             {displayName} 선생님, 교육 현장의 어려움과 부당한 징계로부터<br/>선생님의 권리를 안전하게 지켜드립니다.
           </p>
         </div>
 
-        {/* 프리미엄 벤토 그리드(Bento Grid) 카드 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl px-4">
+        {/* 깔끔한 벤토 그리드(Bento Grid) 카드 */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl px-4">
           
           {/* 사건 수첩 카드 */}
           <button 
             onClick={() => setActivePath('incident-log')}
-            className="md:col-span-2 text-left group glass-card p-10 flex flex-col justify-between min-h-[280px]"
+            className="md:col-span-2 text-left group bg-white dark:bg-slate-800 rounded-2xl shadow-soft hover:shadow-soft-lg border-t-4 border-t-brand-indigo transition-all duration-300 p-10 flex flex-col justify-between min-h-[280px]"
           >
             <div>
               <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg transform group-hover:scale-110 transition-transform duration-500">
@@ -188,8 +188,8 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
               </div>
-              <h2 className="text-slate-800 dark:text-white text-3xl font-bold mb-3 font-noto">나의 사건 수첩</h2>
-              <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed max-w-md font-medium">
+              <h2 className="text-slate-900 dark:text-white text-2xl font-bold mb-3 font-noto">나의 사건 수첩</h2>
+              <p className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed max-w-md font-medium">
                 침해 사실을 암호화하여 기록하고, 증거 수집부터 대응 절차까지 체계적으로 관리하세요.
               </p>
             </div>
@@ -201,7 +201,7 @@ export default function Home() {
           {/* AI 상담 카드 */}
           <button 
             onClick={() => setActivePath('ai-consultation')}
-            className="md:col-span-1 text-left group glass-card p-10 flex flex-col justify-between min-h-[280px]"
+            className="md:col-span-1 text-left group bg-white dark:bg-slate-800 rounded-2xl shadow-soft hover:shadow-soft-lg border-t-4 border-t-brand-azure transition-all duration-300 p-10 flex flex-col justify-between min-h-[280px]"
           >
             <div>
               <div className="w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg transform group-hover:scale-110 transition-transform duration-500">
@@ -209,8 +209,8 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 4.418 9 8z" />
                 </svg>
               </div>
-              <h2 className="text-slate-800 dark:text-white text-3xl font-bold mb-3 font-noto">AI 안심 상담</h2>
-              <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed font-medium">
+              <h2 className="text-slate-900 dark:text-white text-2xl font-bold mb-3 font-noto">AI 안심 상담</h2>
+              <p className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed font-medium">
                 Gemini Pro 엔진이 실시간으로 법적 판례와 구제 방안을 분석해 드립니다.
               </p>
             </div>

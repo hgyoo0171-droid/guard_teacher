@@ -31,11 +31,14 @@ const config: Config = {
         sans: ["var(--font-noto)", "var(--font-inter)", "sans-serif"],
         serif: ["var(--font-outfit)", "var(--font-alegreya)", "serif"],
       },
+      boxShadow: {
+        'soft': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+        'soft-lg': '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)',
+        'soft-xl': '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02)',
+      },
       animation: {
         "smooth-height": "smoothHeight 0.3s ease-in-out",
         "loading-pulse": "loadingPulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        "gradient-xy": "gradientXY 15s ease infinite",
-        "float": "float 6s ease-in-out infinite",
       },
       keyframes: {
         smoothHeight: {
@@ -45,20 +48,6 @@ const config: Config = {
         loadingPulse: {
           "0%, 100%": { opacity: "1", transform: "scale(1)" },
           "50%": { opacity: ".4", transform: "scale(0.98)" },
-        },
-        gradientXY: {
-          "0%, 100%": {
-            "background-size": "400% 400%",
-            "background-position": "0% 0%",
-          },
-          "50%": {
-            "background-size": "200% 200%",
-            "background-position": "100% 100%",
-          },
-        },
-        float: {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-10px)" },
         }
       }
     },

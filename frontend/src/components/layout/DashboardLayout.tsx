@@ -31,7 +31,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, acti
   };
 
   return (
-    <div className="min-h-screen bg-gradient-premium transition-colors duration-200">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-200">
       
       {/* 1. 좌측 사이드바 */}
       <Sidebar 
