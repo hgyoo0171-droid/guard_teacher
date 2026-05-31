@@ -15,18 +15,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # 1. GCP 인증 (Workload Identity Federation 권장)
       - name: Google Auth
         id: auth
-        uses: google-github-actions/auth@v1
+        uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
       # 2. gcloud CLI 설정
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v2
 
       # 3. Docker 인증 (Artifact Registry)
       - name: Docker Auth
@@ -46,7 +46,7 @@ jobs:
 
       # 6. 백엔드 Cloud Run 배포
       - name: Deploy Backend to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v1
+        uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: teachguard-backend
           image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/backend:${{ github.sha }}
@@ -55,7 +55,7 @@ jobs:
 
       # 7. 프론트엔드 Cloud Run 배포
       - name: Deploy Frontend to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v1
+        uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: teachguard-frontend
           image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/frontend:${{ github.sha }}
