@@ -158,18 +158,18 @@ export default function Home() {
       <div className="w-full flex flex-col items-center justify-center min-h-[80vh] animate-in fade-in duration-700">
         
         {/* 중앙 Hero 텍스트 */}
-        <div className="text-center space-y-6 mb-16 px-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel text-white/90 text-sm font-bold tracking-wider uppercase mb-2 animate-float">
+        <div className="text-center space-y-8 mb-24 px-4 mt-12">
+          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-brand-indigo dark:text-brand-azure text-sm font-bold tracking-wider uppercase mb-4 shadow-sm">
             <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-azure opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-brand-indigo"></span>
             </span>
             TeachGuard AI v2.0
           </div>
-          <h1 className="text-white text-5xl md:text-7xl font-extrabold tracking-tight drop-shadow-2xl font-outfit">
-            교사를 위한 단 하나의 <br className="hidden md:block"/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-indigo-300">AI 안심 방패</span>
+          <h1 className="text-slate-900 dark:text-white text-5xl md:text-7xl font-extrabold tracking-tight drop-shadow-sm font-outfit">
+            교사를 위한 단 하나의 <br className="hidden md:block"/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-indigo to-brand-azure">AI 안심 방패</span>
           </h1>
-          <p className="text-slate-200 text-lg md:text-xl font-medium max-w-2xl mx-auto drop-shadow-md">
+          <p className="text-slate-600 dark:text-slate-400 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
             {displayName} 선생님, 교육 현장의 어려움과 부당한 징계로부터<br/>선생님의 권리를 안전하게 지켜드립니다.
           </p>
         </div>
