@@ -316,7 +316,13 @@ export default function Home() {
             <Button variant="outline" onClick={() => setFormSubmitted(false)}>
               새 침해 서류 양식 작성
             </Button>
-            <Button variant="primary" onClick={() => { setActivePath('ai-consultation'); setFormSubmitted(false); }}>
+            <Button variant="primary" onClick={() => { 
+              if (submittedData?.description) {
+                setChatInput(submittedData.description);
+              }
+              setActivePath('ai-consultation'); 
+              setFormSubmitted(false); 
+            }}>
               이 건으로 AI 안심 상담 연계하기
             </Button>
           </div>
@@ -390,15 +396,17 @@ export default function Home() {
         </div>
 
         {/* 채팅 입력 폼 영역 */}
-        <form onSubmit={handleSendMessage} className="p-6 border-t border-slate-100 bg-white flex gap-3">
-          <Input 
-            placeholder="겪으신 상황을 대화하듯 편하게 입력해주세요." 
-            value={chatInput}
-            onChange={(e) => setChatInput(e.target.value)}
-            className="rounded-2xl text-lg py-6 shadow-inner bg-slate-50"
-            disabled={isAiTyping}
-          />
-          <Button type="submit" variant="primary" className="px-8 rounded-2xl text-lg font-bold shadow-md" disabled={isAiTyping}>
+        <form onSubmit={handleSendMessage} className="p-6 border-t border-slate-100 bg-white flex items-center gap-3">
+          <div className="flex-1">
+            <Input 
+              placeholder="겪으신 상황을 대화하듯 편하게 입력해주세요." 
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              className="rounded-2xl text-lg py-6 shadow-inner bg-slate-50 w-full"
+              disabled={isAiTyping}
+            />
+          </div>
+          <Button type="submit" variant="primary" className="px-8 h-[60px] rounded-2xl text-lg font-bold shadow-md shrink-0 whitespace-nowrap" disabled={isAiTyping}>
             보내기
           </Button>
         </form>
